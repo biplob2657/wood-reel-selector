@@ -44,14 +44,15 @@
     .tbl th,.tbl td{border-bottom:1px dashed var(--line);padding:10px 6px;text-align:left}
     .note{color:var(--muted);font-size:12px;margin-top:6px}
 
-    /* Mode switch inside Reel Selector */
+    /* Mode switch in Reel Selector */
     .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
     .seg button{padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:700}
     .seg button.active{background:#111;color:#fff;border-color:#111}
 
     /* SVG responsive wrapper */
     .svg-wrap{width:100%;overflow:auto}
-    /* PIN gate overlay */
+
+    /* PIN gate overlay (minimal) */
     #gate{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:9999}
     .gate-card{width:min(420px,92%);background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 10px 24px rgba(0,0,0,.08)}
     .gate-title{margin:0 0 10px;font-size:20px;text-align:center}
@@ -59,6 +60,8 @@
     .gate-row{display:grid;grid-template-columns:1fr auto;gap:8px}
     .gate-row input{font-size:18px;letter-spacing:2px}
     .gate-err{color:#a11212;font-size:12px;height:16px;margin-top:6px;text-align:center}
+    .fade{animation:fadeout .6s ease forwards}
+    @keyframes fadeout{to{opacity:0;transform:scale(.98)}}
     .shake{animation:shake .2s linear 2}
     @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   </style>
@@ -74,9 +77,9 @@
         <button class="btn" id="unlockBtn">Unlock</button>
       </div>
       <div class="gate-err" id="gateErr"></div>
-      <div class="powered" style="text-align:center;margin-top:8px">Tip: You can change the PIN in the code (PIN_CODE).</div>
     </div>
   </div>
+
   <div class="app">
     <div class="hdr">
       <h1 class="title3d">Wood Reel Selector</h1>
@@ -157,7 +160,7 @@
                   <line x1="-140" y1="-110" x2="-140" y2="110" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
                   <text x="-180" y="0" transform="rotate(-90 -180,0)" text-anchor="middle">OD — Flange Diameter</text>
                   <line x1="140" y1="-55" x2="140" y2="55" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-                  <text x="170" y="0" transform="rotate(-90 170,0)" text-anchor="middle">$1Barrel ID — Core/Drum$2</text>
+                  <text x="170" y="0" transform="rotate(-90 170,0)" text-anchor="middle">Barrel ID — Core/Drum</text>
                   <text x="0" y="140" text-anchor="middle" font-weight="700">Front View</text>
                 </g>
                 <g transform="translate(540,60)">
@@ -170,19 +173,11 @@
                 </g>
                 <g transform="translate(30,300)" font-size="12">
                   <text>• <tspan font-weight="700">OD</tspan> = Flange outer diameter (mm)</text>
-                  <text x="250">• <tspan font-weight="700">$1Barrel ID — Core/Drum$2</tspan> = Core/Drum diameter (mm)</text>
+                  <text x="250">• <tspan font-weight="700">Barrel ID</tspan> = Core/Drum diameter (mm)</text>
                   <text x="530">• <tspan font-weight="700">Traverse</tspan> = Distance between flanges (mm)</text>
                 </g>
               </g>
             </svg>
-          </div>
-          <div style="margin-top:8px;font-size:14px;line-height:1.45;color:#333">
-            <strong>How to read:</strong>
-            <ul style="margin:6px 0 0 18px;padding:0">
-              <li><b>OD</b> (Flange Diameter): full diameter of the side discs.</li>
-              <li><b>Barrel ID</b> (Core/Drum): diameter of the center cylinder the cable wraps on.</li>
-              <li><b>Traverse</b>: clear width between the two flanges.</li>
-            </ul>
           </div>
         </div>
       </div>
@@ -219,12 +214,12 @@
     const PF_CAL = 0.7855;    // factory calibration factor
 
     const reels = [
-      {reel:560, od:560, id:250, traverse:300},
-      {reel:600, od:600, id:400, traverse:315},
-      {reel:610, od:610, id:300, traverse:400},
-      {reel:700, od:700, id:400, traverse:355},
-      {reel:800, od:800, id:400, traverse:400},
-      {reel:900, od:900, id:565, traverse:400},
+      {reel:560,  od:560,  id:250, traverse:300},
+      {reel:600,  od:600,  id:400, traverse:315},
+      {reel:610,  od:610,  id:300, traverse:400},
+      {reel:700,  od:700,  id:400, traverse:355},
+      {reel:800,  od:800,  id:400, traverse:400},
+      {reel:900,  od:900,  id:565, traverse:400},
       {reel:1000, od:1000, id:565, traverse:450},
       {reel:1100, od:1100, id:600, traverse:500},
       {reel:1200, od:1200, id:700, traverse:600},
@@ -237,7 +232,6 @@
     function cap90_geometric(rod,rid,trv,d){ return FILL * (trv*((rod*rod - rid*rid)/(d*d)))/1000 }
     function cap90_factory(rod,rid,trv,d){ return PF_CAL * cap90_geometric(rod,rid,trv,d) }
     function fmtMeters(x){ if(!isFinite(x)) return '—'; return new Intl.NumberFormat(undefined,{maximumFractionDigits:0}).format(x) }
-    function fmt(x,fd=0){ return new Intl.NumberFormat(undefined,{maximumFractionDigits:fd}).format(x) }
 
     // Mode switch for Reel Selector
     function setMode(m){
@@ -256,7 +250,12 @@
       if(d<=0||L<=0){out.innerHTML = `<div>Please enter Cable OD and Length.</div>`;return}
       let best = null;
       for(const r of reels){ const capF = cap90_factory(r.od,r.id,r.traverse,d); if(capF>=L){best = {...r, capF, capG:cap90_geometric(r.od,r.id,r.traverse,d)}; break} }
-      if(!best){ const last=reels[reels.length-1]; const capF=cap90_factory(last.od,last.id,last.traverse,d); out.innerHTML = `<div class="pill">Exceeds largest reel. Max standard: <b>${last.reel} × ${last.id} × ${last.traverse}</b> → <b class="mono">${fmtMeters(capF)} m</b> (factory)</div>`; return }
+      if(!best){
+        const last=reels[reels.length-1];
+        const capF=cap90_factory(last.od,last.id,last.traverse,d);
+        out.innerHTML = `<div class="pill">Exceeds largest reel. Max standard: <b>${last.reel} × ${last.id} × ${last.traverse}</b> → <b class="mono">${fmtMeters(capF)} m</b> (factory)</div>`;
+        return
+      }
       const usage = L/best.capF*100;
       out.innerHTML = `
         <div class="caps">
@@ -288,7 +287,7 @@
         </div>
         <div class="note">Geometric @90% (no calibration): ${fmtMeters(cap90G)} m</div>
         <table class="tbl mono" style="margin-top:8px">
-          <tr><th>Cable OD</th><th>Reel OD</th><th>$1Barrel ID — Core/Drum$2</th><th>Traverse</th></tr>
+          <tr><th>Cable OD</th><th>Reel OD</th><th>Barrel ID</th><th>Traverse</th></tr>
           <tr><td>${d} mm</td><td>${rod} mm</td><td>${rid} mm</td><td>${trv} mm</td></tr>
         </table>`;
     }
@@ -315,8 +314,8 @@
     async function copyRegular(){ const box=document.getElementById('r-out'); const btn=document.getElementById('r-copy'); const txt=box.innerText.trim(); if(!txt){btn.textContent='Copy';return} const ok=await copyText(txt); btn.textContent= ok? 'Copied!' : 'Copy'; setTimeout(()=>btn.textContent='Copy',1200) }
     async function copyCustom(){ const box=document.getElementById('c-out'); const btn=document.getElementById('c-copy'); const txt=box.innerText.trim(); if(!txt){btn.textContent='Copy';return} const ok=await copyText(txt); btn.textContent= ok? 'Copied!' : 'Copy'; setTimeout(()=>btn.textContent='Copy',1200) }
 
-    // PIN logic
-    const PIN_CODE = "1234"; // ← Change this to your desired PIN (digits)
+    // ===== PIN logic (minimal) =====
+    const PIN_CODE = "1234"; // ← change this to your PIN (digits)
     const MAX_TRIES = 5;
     let tries = 0;
 
@@ -328,7 +327,13 @@
       const err = document.getElementById('gateErr');
       const btn = document.getElementById('unlockBtn');
       const v = (inp.value||'').trim();
-      if(v === PIN_CODE){ sessionStorage.setItem('reel_unlocked','1'); hideGate(); return }
+      if(v === PIN_CODE){
+        err.textContent = '';
+        sessionStorage.setItem('reel_unlocked','1');
+        document.querySelector('.gate-card').classList.add('fade');
+        setTimeout(()=>{ hideGate(); }, 550);
+        return;
+      }
       tries++;
       err.textContent = `Wrong PIN (${tries}/${MAX_TRIES})`;
       btn.classList.add('shake'); setTimeout(()=>btn.classList.remove('shake'),220);
@@ -344,6 +349,19 @@
 
     // boot
     buildReelTable();
+
+    // ===== quick self-tests (console) =====
+    (function runSelfTests(){
+      try {
+        const approx = (a,b,eps=1)=> Math.abs(a-b) <= eps;
+        const g90 = cap90_geometric(1600,800,800,31);
+        console.assert(approx(Math.round(g90), 1439, 2), 'Test1: geometric 90% ≈ 1439 m, got', g90);
+        const f90 = cap90_factory(1600,800,800,31);
+        console.assert(approx(Math.round(f90), 1130, 3), 'Test2: factory 90% ≈ 1130 m, got', f90);
+        console.assert(typeof buildReelTable === 'function', 'Test3: buildReelTable missing');
+        console.log('%cSelf-tests passed','color:green');
+      } catch(e){ console.error('Self-tests error', e); }
+    })();
   </script>
 </body>
 </html>
