@@ -287,4 +287,10 @@
     buildReelTable();
   </script>
 </body>
+  <script>
+  const pass = prompt("Enter PIN to open:");
+  if (pass !== "1234") {
+    document.body.innerHTML = "<h2 style='text-align:center;margin-top:20%'>Access Denied</h2>";
+  }
+</script>
 </html>
