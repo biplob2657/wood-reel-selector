@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Wood Reel Selector</title>
+  <style>
+    :root{ --bg:#ffffff; --panel:#ffffff; --ink:#111111; --muted:#5b5f6a; --line:#e6e8ec; --btn:#111; --btn-ink:#fff }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;display:flex;align-items:flex-start;justify-content:center;padding:12px}
+    .app{width:min(880px,100%)}
+    .hdr{text-align:center;margin-bottom:10px}
+    .title3d{margin:0;font-size:22px;letter-spacing:.2px;line-height:1.15;text-shadow:0 1px 0 #fff,0 2px 0 #eee,0 3px 0 #e6e6e6,0 4px 0 #ddd,0 8px 12px rgba(0,0,0,.12)}
+    .powered{margin-top:4px;color:var(--muted);font-size:12px}
+
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 10px 24px rgba(0,0,0,.06)}
+
+    /* Accordion categories */
+    details.acd{margin:10px 0;border:1px solid var(--line);border-radius:14px;background:#fff}
+    details.acd>summary{list-style:none;padding:14px 14px;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+    details.acd>summary::marker{display:none}
+    details.acd[open]>summary{background:#111;color:#fff;border-bottom:1px solid var(--line)}
+    .acd-body{padding:12px}
+
+    /* Inputs/buttons mobile-first */
+    .grid{display:grid;grid-template-columns:1fr;gap:10px}
+    @media (min-width:560px){.grid{grid-template-columns:1fr 1fr}}
+    label{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}
+    input,button{width:100%;padding:12px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);outline:none;font-size:16px}
+    input:focus{border-color:#111;box-shadow:0 0 0 3px rgba(17,17,17,.08)}
+    .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end;margin-top:10px}
+    @media (min-width:560px){.row{grid-template-columns:1fr auto auto}}
+    .btn{background:var(--btn);color:var(--btn-ink);border-color:#000;cursor:pointer;font-weight:800;letter-spacing:.2px}
+    .btn-ghost{background:#fff;color:#111;border:1px solid var(--line);font-weight:700}
+
+    .result{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+    .caps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    @media (max-width:480px){.caps{grid-template-columns:1fr}}
+    .pill{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+    .mono{font-variant-numeric:tabular-nums}
+
+    .tbl{width:100%;border-collapse:collapse;margin-top:10px}
+    .tbl th,.tbl td{border-bottom:1px dashed var(--line);padding:10px 6px;text-align:left}
+    .note{color:var(--muted);font-size:12px;margin-top:6px}
+
+    /* Mode switch inside Reel Selector */
+    .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+    .seg button{padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:700}
+    .seg button.active{background:#111;color:#fff;border-color:#111}
+
+    /* SVG responsive wrapper */
+    .svg-wrap{width:100%;overflow:auto}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="hdr">
+      <h1 class="title3d">Wood Reel Selector</h1>
+      <div class="powered">Powered by <b>RR Operations Team</b></div>
+    </div>
+
+    <!-- 01. Reel Selector -->
+    <details class="acd" open>
+      <summary>01. Reel Selector</summary>
+      <div class="acd-body">
+        <div class="seg">
+          <button id="mode-regular" class="active" onclick="setMode('regular')">Regular</button>
+          <button id="mode-custom" onclick="setMode('custom')">Customized</button>
+        </div>
+
+        <!-- Regular mode -->
+        <div id="panel-regular" class="card">
+          <div class="grid">
+            <div>
+              <label>Cable OD (mm)</label>
+              <input id="r-cable-od" type="number" min="1" step="0.1" placeholder="e.g., 31">
+            </div>
+            <div>
+              <label>Length (m)</label>
+              <input id="r-length" type="number" min="1" step="1" placeholder="e.g., 1050">
+            </div>
+          </div>
+          <div class="row">
+            <button class="btn" onclick="computeRegular()">Calculate</button>
+            <button class="btn-ghost" onclick="resetRegular()">Reset</button>
+            <button class="btn-ghost" onclick="copyRegular()" id="r-copy">Copy</button>
+          </div>
+          <div id="r-out" class="result"></div>
+        </div>
+
+        <!-- Customized mode -->
+        <div id="panel-custom" class="card" style="display:none">
+          <div class="grid">
+            <div>
+              <label>Cable OD (mm)</label>
+              <input id="c-cable-od" type="number" min="1" step="0.1" placeholder="e.g., 31">
+            </div>
+            <div>
+              <label>Reel OD (mm)</label>
+              <input id="c-rod" type="number" min="100" step="1" placeholder="e.g., 1600">
+            </div>
+            <div>
+              <label>Barrel ID (mm)</label>
+              <input id="c-rid" type="number" min="50" step="1" placeholder="e.g., 800">
+            </div>
+            <div>
+              <label>Traverse (mm)</label>
+              <input id="c-trv" type="number" min="50" step="1" placeholder="e.g., 800">
+            </div>
+          </div>
+          <div class="row">
+            <button class="btn" onclick="computeCustom()">Calculate</button>
+            <button class="btn-ghost" onclick="resetCustom()">Reset</button>
+            <button class="btn-ghost" onclick="copyCustom()" id="c-copy">Copy</button>
+          </div>
+          <div id="c-out" class="result"></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 02. Reel Dimension -->
+    <details class="acd">
+      <summary>02. Reel Dimension</summary>
+      <div class="acd-body">
+        <div class="card">
+          <div class="svg-wrap">
+            <svg viewBox="0 0 900 320" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" aria-label="Wooden reel dimension diagram">
+              <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 Z" fill="#111"/></marker></defs>
+              <g font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="13" fill="#111" stroke="#111" stroke-width="2">
+                <g transform="translate(150,160)">
+                  <circle cx="0" cy="0" r="110" fill="none" stroke="#111"/>
+                  <circle cx="0" cy="0" r="55" fill="none" stroke="#111"/>
+                  <line x1="-140" y1="-110" x2="-140" y2="110" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                  <text x="-180" y="0" transform="rotate(-90 -180,0)" text-anchor="middle">OD (Flange Dia)</text>
+                  <line x1="140" y1="-55" x2="140" y2="55" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                  <text x="170" y="0" transform="rotate(-90 170,0)" text-anchor="middle">Barrel ID</text>
+                  <text x="0" y="140" text-anchor="middle" font-weight="700">Front View</text>
+                </g>
+                <g transform="translate(540,60)">
+                  <rect x="0" y="0" width="22" height="200" fill="#fff"/>
+                  <rect x="22" y="40" width="156" height="120" fill="#fff"/>
+                  <rect x="178" y="0" width="22" height="200" fill="#fff"/>
+                  <line x1="22" y1="230" x2="178" y2="230" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                  <text x="100" y="252" text-anchor="middle">Traverse (Width)</text>
+                  <text x="100" y="-12" text-anchor="middle" font-weight="700">Side View</text>
+                </g>
+                <g transform="translate(30,300)" font-size="12">
+                  <text>• <tspan font-weight="700">OD</tspan> = Flange outer diameter (mm)</text>
+                  <text x="250">• <tspan font-weight="700">Barrel ID</tspan> = Core/Drum diameter (mm)</text>
+                  <text x="530">• <tspan font-weight="700">Traverse</tspan> = Distance between flanges (mm)</text>
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 03. Standard Wood Reel -->
+    <details class="acd">
+      <summary>03. Standard Wood Reel</summary>
+      <div class="acd-body">
+        <div class="card">
+          <div class="grid">
+            <div>
+              <label>Cable OD (mm)</label>
+              <input id="t-od" type="number" min="1" step="0.1" placeholder="e.g., 31" value="31">
+            </div>
+            <div>
+              <label>Length (m) <span style="color:var(--muted)">(optional)</span></label>
+              <input id="t-len" type="number" min="1" step="1" placeholder="e.g., 1050">
+            </div>
+          </div>
+          <div class="row">
+            <button class="btn" onclick="buildReelTable()">Update</button>
+          </div>
+          <table class="tbl mono" id="reel-table"></table>
+          <div class="note">Capacities use your factory calibration (PF = 0.7855) at 90% fill. Geometric @90% is higher and shown only in the selector for reference.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <script>
+    // 90% fill with factory calibration so 1600×800×800 at d=31 → ~1130 m
+    const FILL = 0.90;        // 90% target
+    const PF_CAL = 0.7855;    // factory calibration factor
+
+    const reels = [
+      {reel:560, od:560, id:250, traverse:300},
+      {reel:600, od:600, id:400, traverse:315},
+      {reel:610, od:610, id:300, traverse:400},
+      {reel:700, od:700, id:400, traverse:355},
+      {reel:800, od:800, id:400, traverse:400},
+      {reel:900, od:900, id:565, traverse:400},
+      {reel:1000, od:1000, id:565, traverse:450},
+      {reel:1100, od:1100, id:600, traverse:500},
+      {reel:1200, od:1200, id:700, traverse:600},
+      {reel:1400, od:1400, id:800, traverse:700},
+      {reel:1600, od:1600, id:800, traverse:800},
+      {reel:1800, od:1800, id:850, traverse:900}
+    ];
+
+    function cap90_geometric(rod,rid,trv,d){ return FILL * (trv*((rod*rod - rid*rid)/(d*d)))/1000 }
+    function cap90_factory(rod,rid,trv,d){ return PF_CAL * cap90_geometric(rod,rid,trv,d) }
+    function fmtMeters(x){ if(!isFinite(x)) return '—'; return new Intl.NumberFormat(undefined,{maximumFractionDigits:0}).format(x) }
+    function fmt(x,fd=0){ return new Intl.NumberFormat(undefined,{maximumFractionDigits:fd}).format(x) }
+
+    // Mode switch for Reel Selector
+    function setMode(m){
+      const r = document.getElementById('panel-regular');
+      const c = document.getElementById('panel-custom');
+      const br = document.getElementById('mode-regular');
+      const bc = document.getElementById('mode-custom');
+      if(m==='regular'){ r.style.display='block'; c.style.display='none'; br.classList.add('active'); bc.classList.remove('active'); }
+      else{ r.style.display='none'; c.style.display='block'; bc.classList.add('active'); br.classList.remove('active'); }
+    }
+
+    function computeRegular(){
+      const d = +document.getElementById('r-cable-od').value;
+      const L = +document.getElementById('r-length').value;
+      const out = document.getElementById('r-out');
+      if(d<=0||L<=0){out.innerHTML = `<div>Please enter Cable OD and Length.</div>`;return}
+      let best = null;
+      for(const r of reels){ const capF = cap90_factory(r.od,r.id,r.traverse,d); if(capF>=L){best = {...r, capF, capG:cap90_geometric(r.od,r.id,r.traverse,d)}; break} }
+      if(!best){ const last=reels[reels.length-1]; const capF=cap90_factory(last.od,last.id,last.traverse,d); out.innerHTML = `<div class="pill">Exceeds largest reel. Max standard: <b>${last.reel} × ${last.id} × ${last.traverse}</b> → <b class="mono">${fmtMeters(capF)} m</b> (factory)</div>`; return }
+      const usage = L/best.capF*100;
+      out.innerHTML = `
+        <div class="caps">
+          <div class="pill">Reel: <b>${best.reel} × ${best.id} × ${best.traverse}</b> mm</div>
+          <div class="pill">Cap @90% (factory): <b class="mono">${fmtMeters(best.capF)} m</b></div>
+        </div>
+        <div class="caps" style="margin-top:6px">
+          <div class="pill">Length: <b class="mono">${fmtMeters(L)} m</b></div>
+          <div class="pill">Usage: <b class="mono">${usage.toFixed(1)}%</b></div>
+        </div>
+        <div class="note">Geometric @90% (no calibration): ${fmtMeters(best.capG)} m</div>`;
+    }
+
+    function computeCustom(){
+      const d = +document.getElementById('c-cable-od').value;
+      const rod = +document.getElementById('c-rod').value;
+      const rid = +document.getElementById('c-rid').value;
+      const trv = +document.getElementById('c-trv').value;
+      const out = document.getElementById('c-out');
+      if(d<=0||rod<=0||rid<=0||trv<=0){out.innerHTML = `<div>Please enter all reel and cable values.</div>`;return}
+      if(rid>=rod){out.innerHTML = `<div>Barrel ID must be smaller than Reel OD.</div>`;return}
+      const capG100 = (trv * ((rod*rod - rid*rid)/(d*d)))/1000; // 100% geometric
+      const cap90G  = cap90_geometric(rod,rid,trv,d);
+      const cap90F  = cap90_factory(rod,rid,trv,d);
+      out.innerHTML = `
+        <div class="caps">
+          <div class="pill">Cap @90% (factory): <b class="mono">${fmtMeters(cap90F)} m</b></div>
+          <div class="pill">@100% (geometric): <b class="mono">${fmtMeters(capG100)}</b> m</div>
+        </div>
+        <div class="note">Geometric @90% (no calibration): ${fmtMeters(cap90G)} m</div>
+        <table class="tbl mono" style="margin-top:8px">
+          <tr><th>Cable OD</th><th>Reel OD</th><th>Barrel ID</th><th>Traverse</th></tr>
+          <tr><td>${d} mm</td><td>${rod} mm</td><td>${rid} mm</td><td>${trv} mm</td></tr>
+        </table>`;
+    }
+
+    function buildReelTable(){
+      const d = +document.getElementById('t-od').value;
+      const L = +document.getElementById('t-len').value;
+      const t = document.getElementById('reel-table');
+      if(!(d>0)){ t.innerHTML = '<tr><td>Please enter Cable OD.</td></tr>'; return }
+      const header = `<tr><th>Reel</th><th>OD</th><th>ID (Barrel)</th><th>Traverse</th><th>Cap @90% (factory, m)</th>${L>0?'<th>Fits '+fmtMeters(L)+' m?</th>':''}</tr>`;
+      const rows = reels.map(r=>{
+        const capF = cap90_factory(r.od,r.id,r.traverse,d);
+        const fits = L>0 ? (capF>=L? 'Yes' : 'No') : '';
+        const mark = L>0 && capF>=L ? ' style="font-weight:700"' : '';
+        return `<tr${mark}><td>${r.reel}</td><td>${r.od}</td><td>${r.id}</td><td>${r.traverse}</td><td>${fmtMeters(capF)}</td>${L>0?`<td>${fits}</td>`:''}</tr>`
+      });
+      t.innerHTML = [header, ...rows].join('');
+    }
+
+    function resetRegular(){ document.getElementById('r-cable-od').value=''; document.getElementById('r-length').value=''; document.getElementById('r-out').innerHTML='' }
+    function resetCustom(){ document.getElementById('c-cable-od').value=''; document.getElementById('c-rod').value=''; document.getElementById('c-rid').value=''; document.getElementById('c-trv').value=''; document.getElementById('c-out').innerHTML='' }
+
+    async function copyText(txt){ try{ await navigator.clipboard.writeText(txt); return true } catch(e){ const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); const ok=document.execCommand('copy'); document.body.removeChild(ta); return ok } }
+    async function copyRegular(){ const box=document.getElementById('r-out'); const btn=document.getElementById('r-copy'); const txt=box.innerText.trim(); if(!txt){btn.textContent='Copy';return} const ok=await copyText(txt); btn.textContent= ok? 'Copied!' : 'Copy'; setTimeout(()=>btn.textContent='Copy',1200) }
+    async function copyCustom(){ const box=document.getElementById('c-out'); const btn=document.getElementById('c-copy'); const txt=box.innerText.trim(); if(!txt){btn.textContent='Copy';return} const ok=await copyText(txt); btn.textContent= ok? 'Copied!' : 'Copy'; setTimeout(()=>btn.textContent='Copy',1200) }
+
+    // boot
+    buildReelTable();
+  </script>
+</body>
+</html>
