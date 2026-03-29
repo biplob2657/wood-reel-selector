@@ -111,7 +111,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .btn::before{content:'';position:absolute;inset:0;background:var(--cyan);transform:translateX(-101%);transition:.25s cubic-bezier(.4,0,.2,1);}
 .btn:hover::before{transform:translateX(0);}
 .btn:hover{color:#000;}
-.btn span{position:relative;z-index:1;}
 .btn-orange{border-color:var(--orange);color:var(--orange);}
 .btn-orange::before{background:var(--orange);}
 .btn-orange:hover{color:#000;}
@@ -255,23 +254,27 @@ tr.hl td{color:var(--green);background:rgba(0,255,157,.05);}
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bp);}::-webkit-scrollbar-thumb{background:var(--line2);}
 
 @media(max-width:860px){
-  .sidebar{transform:translateX(-100%);box-shadow:4px 0 30px rgba(0,0,0,.9);background:var(--bp2);width:280px;}
+  .sidebar{transform:translateX(-100%);box-shadow:4px 0 30px rgba(0,0,0,.9);background:var(--bp2);width:280px;z-index:1000;}
   .sidebar.open{transform:translateX(0);}
   .sidebar *{position:relative;z-index:1;}
   .main{margin-left:0;}
   .topbar{display:none;}
-  .mob-bar{display:flex;}
+  .mob-bar{display:flex;z-index:200;}
   .body{padding:16px;}
   .grid{grid-template-columns:1fr;}
   .btn-row{flex-direction:column;}
   .btn-row .btn{width:100%;justify-content:center;}
   .game-q{font-size:26px;padding:20px;}
   #toast{left:12px;right:12px;bottom:12px;}
-  .nav-btn{padding:14px 18px 14px 22px;font-size:13px;min-height:48px;}
+  .nav-btn{padding:14px 18px 14px 22px;font-size:14px;min-height:48px;color:var(--ink2);}
+  .nav-btn.active{color:var(--cyan);background:rgba(0,212,255,.12);}
   .nav-btn i{font-size:14px;}
   .seg{flex-direction:column;}
   .seg-btn{border-right:none;border-bottom:1px solid var(--line);}
   .seg-btn:last-child{border-bottom:none;}
+  /* MOBILE OVERLAY FIX */
+  .overlay{z-index:999;background:rgba(0,0,0,.85);backdrop-filter:blur(2px);}
+  .overlay.on{display:block;}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}.scanline{display:none;}}
 </style>
@@ -295,9 +298,10 @@ tr.hl td{color:var(--green);background:rgba(0,255,157,.05);}
   </div>
 </div>
 
-<div class="overlay" id="overlay"></div>
-
 <div class="layout">
+  <!-- OVERLAY MOVED INSIDE LAYOUT -->
+  <div class="overlay" id="overlay"></div>
+  
   <aside class="sidebar" id="sidebar">
     <div class="sb-head">
       <div class="sb-ref">SYS:RR-OPS // v2.0</div>
@@ -658,9 +662,35 @@ if(sessionStorage.getItem('cs')==='1')$('gate').style.display='none';
 const pages=['home','selector','dimension','standard','copper','pvc'];
 const meta={home:{title:'DASHBOARD',ref:'DOC-01'},selector:{title:'REEL SELECTOR',ref:'CALC-01'},dimension:{title:'REEL DIMENSION',ref:'DWG-01'},standard:{title:'STANDARD REELS',ref:'TBL-01'},copper:{title:'COPPER CONVERSION',ref:'CALC-02'},pvc:{title:'PVC WEIGHT',ref:'CALC-03'}};
 function goTo(id){pages.forEach(p=>{const s=$(p);if(s)s.classList.toggle('active',p===id);});document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===id));const m=meta[id];if(m){$('tbTitle').textContent=m.title;$('tbRef').textContent=m.ref;}if(window.innerWidth<=860){$('sidebar').classList.remove('open');$('overlay').classList.remove('on');}window.scrollTo({top:0,behavior:'smooth'});}
-document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.page)));
-$('burger').addEventListener('click',()=>{$('sidebar').classList.toggle('open');$('overlay').classList.toggle('on');});
-$('overlay').addEventListener('click',()=>{$('sidebar').classList.remove('open');$('overlay').classList.remove('on');});
+
+// MOBILE NAVIGATION FIX - Improved touch handling
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',(e)=>{
+  e.stopPropagation();
+  goTo(b.dataset.page);
+}));
+
+$('burger').addEventListener('click',(e)=>{
+  e.stopPropagation();
+  $('sidebar').classList.toggle('open');
+  $('overlay').classList.toggle('on');
+});
+
+// Close sidebar when clicking overlay
+$('overlay').addEventListener('click',()=>{
+  $('sidebar').classList.remove('open');
+  $('overlay').classList.remove('on');
+});
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click',(e)=>{
+  if(window.innerWidth<=860 && $('sidebar').classList.contains('open')){
+    if(!e.target.closest('#sidebar') && !e.target.closest('#burger')){
+      $('sidebar').classList.remove('open');
+      $('overlay').classList.remove('on');
+    }
+  }
+});
+
 goTo('home');
 
 (function(){
