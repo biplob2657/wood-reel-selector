@@ -1,367 +1,741 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <title>Wood Reel Selector</title>
-  <style>
-    :root{ --bg:#ffffff; --panel:#ffffff; --ink:#111111; --muted:#5b5f6a; --line:#e6e8ec; --btn:#111; --btn-ink:#fff }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;display:flex;align-items:flex-start;justify-content:center;padding:12px}
-    .app{width:min(880px,100%)}
-    .hdr{text-align:center;margin-bottom:10px}
-    .title3d{margin:0;font-size:22px;letter-spacing:.2px;line-height:1.15;text-shadow:0 1px 0 #fff,0 2px 0 #eee,0 3px 0 #e6e6e6,0 4px 0 #ddd,0 8px 12px rgba(0,0,0,.12)}
-    .powered{margin-top:4px;color:var(--muted);font-size:12px}
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"/>
+<title>Cable Solutions — RR Operations Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --bp: #0a1628;
+  --bp2: #0d1f3c;
+  --bp3: #102548;
+  --grid: rgba(100,160,255,0.07);
+  --gridl: rgba(100,160,255,0.12);
+  --line: rgba(100,160,255,0.18);
+  --line2: rgba(100,160,255,0.28);
+  --ink: #e8f4ff;
+  --ink2: #8ab4d8;
+  --ink3: #4a7aaa;
+  --cyan: #00d4ff;
+  --cyan2: #0099cc;
+  --cyang: rgba(0,212,255,0.15);
+  --cyanglow: rgba(0,212,255,0.35);
+  --orange: #ff8c00;
+  --orangeg: rgba(255,140,0,0.15);
+  --green: #00ff9d;
+  --red: #ff4466;
+  --yellow: #ffd700;
+  --mono: 'Share Tech Mono', monospace;
+  --display: 'Orbitron', sans-serif;
+  --body: 'Exo 2', sans-serif;
+  --nav-w: 260px;
+  --r: 4px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body {
+  background: var(--bp);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+body::before {
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px),
+    linear-gradient(var(--gridl) 1px,transparent 1px),
+    linear-gradient(90deg,var(--gridl) 1px,transparent 1px);
+  background-size:20px 20px,20px 20px,100px 100px,100px 100px;
+  pointer-events:none;z-index:0;
+}
+body::after {
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 0% 0%,rgba(0,212,255,0.06) 0%,transparent 40%),
+             radial-gradient(ellipse at 100% 100%,rgba(0,212,255,0.04) 0%,transparent 35%);
+  pointer-events:none;z-index:0;
+}
+.scanline {
+  position:fixed;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  animation:scan 6s linear infinite;z-index:9997;opacity:.4;pointer-events:none;
+}
+@keyframes scan{from{top:-2px;}to{top:100vh;}}
 
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 10px 24px rgba(0,0,0,.06)}
+/* GATE */
+#gate {
+  position:fixed;inset:0;background:rgba(5,12,28,0.97);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;backdrop-filter:blur(4px);
+}
+.gate-box {
+  width:min(440px,92vw);position:relative;padding:40px;
+  background:var(--bp2);border:1px solid var(--line2);
+}
+.gate-box::before{content:'';position:absolute;top:-1px;left:-1px;width:20px;height:20px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan);}
+.gate-box::after{content:'';position:absolute;bottom:-1px;right:-1px;width:20px;height:20px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan);}
+.g-tr{position:absolute;top:-1px;right:-1px;width:20px;height:20px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan);}
+.g-bl{position:absolute;bottom:-1px;left:-1px;width:20px;height:20px;border-bottom:2px solid var(--cyan);border-left:2px solid var(--cyan);}
+.gate-ref{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-bottom:24px;letter-spacing:.1em;}
+.gate-title{font-family:var(--display);font-size:22px;font-weight:900;color:var(--cyan);letter-spacing:.05em;margin-bottom:4px;text-shadow:0 0 20px var(--cyanglow);}
+.gate-sub{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-bottom:32px;letter-spacing:.05em;}
+.gate-label{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:.15em;margin-bottom:8px;}
+.gate-row{display:flex;gap:10px;}
+.gate-err{font-family:var(--mono);font-size:11px;color:var(--red);margin-top:12px;min-height:16px;letter-spacing:.05em;}
 
-    /* Accordion categories */
-    details.acd{margin:10px 0;border:1px solid var(--line);border-radius:14px;background:#fff}
-    details.acd>summary{list-style:none;padding:14px 14px;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
-    details.acd>summary::marker{display:none}
-    details.acd[open]>summary{background:#111;color:#fff;border-bottom:1px solid var(--line)}
-    .acd-body{padding:12px}
+/* INPUTS */
+input,select {
+  width:100%;padding:11px 14px;background:var(--bp3);
+  border:1px solid var(--line);color:var(--ink);
+  font-family:var(--mono);font-size:13px;border-radius:0;transition:.2s;-webkit-appearance:none;
+}
+input:focus,select:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,212,255,.12),inset 0 0 8px rgba(0,212,255,.04);}
+input::placeholder{color:var(--ink3);}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M0 0l5 7 5-7z' fill='%234a7aaa'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer;}
+#pin{text-align:center;font-size:22px;letter-spacing:10px;}
 
-    /* Inputs/buttons mobile-first */
-    .grid{display:grid;grid-template-columns:1fr;gap:10px}
-    @media (min-width:560px){.grid{grid-template-columns:1fr 1fr}}
-    label{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}
-    input,button{width:100%;padding:12px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);outline:none;font-size:16px}
-    input:focus{border-color:#111;box-shadow:0 0 0 3px rgba(17,17,17,.08)}
-    .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end;margin-top:10px}
-    @media (min-width:560px){.row{grid-template-columns:1fr auto auto}}
-    .btn{background:var(--btn);color:var(--btn-ink);border-color:#000;cursor:pointer;font-weight:800;letter-spacing:.2px}
-    .btn-ghost{background:#fff;color:#111;border:1px solid var(--line);font-weight:700}
+/* BUTTONS */
+.btn {
+  display:inline-flex;align-items:center;gap:8px;padding:11px 22px;
+  background:transparent;border:1px solid var(--cyan);color:var(--cyan);
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  cursor:pointer;transition:.2s;position:relative;overflow:hidden;border-radius:0;
+}
+.btn::before{content:'';position:absolute;inset:0;background:var(--cyan);transform:translateX(-101%);transition:.25s cubic-bezier(.4,0,.2,1);}
+.btn:hover::before{transform:translateX(0);}
+.btn:hover{color:#000;}
+.btn span{position:relative;z-index:1;}
+.btn-orange{border-color:var(--orange);color:var(--orange);}
+.btn-orange::before{background:var(--orange);}
+.btn-orange:hover{color:#000;}
+.btn-dim{border-color:var(--line2);color:var(--ink3);}
+.btn-dim::before{background:var(--bp3);}
+.btn-dim:hover{color:var(--ink);}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+.icon-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:var(--bp3);border:1px solid var(--line);color:var(--ink3);cursor:pointer;transition:.2s;font-size:12px;flex-shrink:0;}
+.icon-btn:hover{border-color:var(--cyan);color:var(--cyan);}
 
-    .result{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
-    .caps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    @media (max-width:480px){.caps{grid-template-columns:1fr}}
-    .pill{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
-    .mono{font-variant-numeric:tabular-nums}
+/* LAYOUT */
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
 
-    .tbl{width:100%;border-collapse:collapse;margin-top:10px}
-    .tbl th,.tbl td{border-bottom:1px dashed var(--line);padding:10px 6px;text-align:left}
-    .note{color:var(--muted);font-size:12px;margin-top:6px}
+/* SIDEBAR */
+.sidebar{width:var(--nav-w);background:var(--bp2);border-right:1px solid var(--line);position:fixed;left:0;top:0;bottom:0;display:flex;flex-direction:column;z-index:100;transition:transform .3s cubic-bezier(.4,0,.2,1);}
+.sidebar::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:20px 20px;pointer-events:none;}
+.sb-head{padding:20px 18px;border-bottom:1px solid var(--line);position:relative;}
+.sb-ref{font-family:var(--mono);font-size:9px;color:var(--ink3);letter-spacing:.15em;margin-bottom:10px;}
+.sb-logo-row{display:flex;align-items:center;gap:12px;}
+.sb-badge{width:42px;height:42px;border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px;font-weight:900;color:var(--cyan);position:relative;flex-shrink:0;text-shadow:0 0 10px var(--cyanglow);}
+.sb-badge::before{content:'';position:absolute;top:-1px;left:-1px;width:6px;height:6px;border-top:1px solid var(--cyan);border-left:1px solid var(--cyan);}
+.sb-badge::after{content:'';position:absolute;bottom:-1px;right:-1px;width:6px;height:6px;border-bottom:1px solid var(--cyan);border-right:1px solid var(--cyan);}
+.sb-title{font-family:var(--display);font-size:11px;font-weight:700;color:var(--ink);letter-spacing:.08em;}
+.sb-sub{font-family:var(--mono);font-size:9px;color:var(--ink3);letter-spacing:.1em;margin-top:2px;}
+.nav{flex:1;padding:10px 0;overflow-y:auto;}
+.nav-group{padding:14px 18px 6px;font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+.nav-group::after{content:'';flex:1;height:1px;background:var(--line);}
+.nav-btn{appearance:none;border:none;background:transparent;width:100%;text-align:left;padding:10px 18px 10px 22px;color:var(--ink3);font-family:var(--mono);font-size:11px;letter-spacing:.06em;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:10px;border-left:2px solid transparent;position:relative;}
+.nav-btn i{font-size:12px;width:14px;text-align:center;opacity:.6;transition:.15s;}
+.nav-btn:hover{color:var(--ink2);background:rgba(0,212,255,.04);border-left-color:var(--line2);}
+.nav-btn:hover i{opacity:1;}
+.nav-btn.active{color:var(--cyan);background:rgba(0,212,255,.07);border-left-color:var(--cyan);}
+.nav-btn.active i{opacity:1;color:var(--cyan);}
+.nav-btn.active::before{content:'▶';position:absolute;right:12px;font-size:7px;color:var(--cyan);opacity:.6;}
+.sb-footer{padding:14px 18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:9px;color:var(--ink3);letter-spacing:.08em;line-height:1.8;}
+.sb-footer em{color:var(--cyan);font-style:normal;}
 
-    /* Mode switch in Reel Selector */
-    .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-    .seg button{padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:700}
-    .seg button.active{background:#111;color:#fff;border-color:#111}
+/* MAIN */
+.main{margin-left:var(--nav-w);min-height:100vh;display:flex;flex-direction:column;}
+.topbar{padding:14px 28px;background:rgba(10,22,40,0.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;}
+.tb-left{display:flex;align-items:center;gap:14px;}
+.tb-ref{font-family:var(--mono);font-size:9px;color:var(--ink3);letter-spacing:.15em;border:1px solid var(--line);padding:4px 8px;}
+.tb-title{font-family:var(--display);font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.08em;}
+.tb-right{display:flex;align-items:center;gap:12px;}
+.tb-time{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.08em;}
+.tb-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 2s ease infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.mob-bar{display:none;position:sticky;top:0;z-index:50;background:rgba(10,22,40,0.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:12px 16px;align-items:center;justify-content:space-between;}
+.mob-brand{display:flex;align-items:center;gap:10px;}
+.mob-badge{width:32px;height:32px;border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:10px;font-weight:900;color:var(--cyan);}
+.mob-title{font-family:var(--display);font-size:11px;font-weight:700;color:var(--ink);letter-spacing:.06em;}
+.burger{width:36px;height:36px;background:var(--bp3);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink2);font-size:14px;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;}
+.overlay.on{display:block;}
 
-    /* SVG responsive wrapper */
-    .svg-wrap{width:100%;overflow:auto}
+/* CONTENT */
+.body{flex:1;padding:24px 28px;}
+.page{display:none;}
+.page.active{display:block;animation:pagein .4s ease;}
+@keyframes pagein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
-    /* PIN gate overlay (minimal) */
-    #gate{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:9999}
-    .gate-card{width:min(420px,92%);background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 10px 24px rgba(0,0,0,.08)}
-    .gate-title{margin:0 0 10px;font-size:20px;text-align:center}
-    .gate-sub{margin:0 0 14px;color:var(--muted);font-size:13px;text-align:center}
-    .gate-row{display:grid;grid-template-columns:1fr auto;gap:8px}
-    .gate-row input{font-size:18px;letter-spacing:2px}
-    .gate-err{color:#a11212;font-size:12px;height:16px;margin-top:6px;text-align:center}
-    .fade{animation:fadeout .6s ease forwards}
-    @keyframes fadeout{to{opacity:0;transform:scale(.98)}}
-    .shake{animation:shake .2s linear 2}
-    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-  </style>
+/* PANEL */
+.panel{background:var(--bp2);border:1px solid var(--line);margin-bottom:20px;position:relative;overflow:hidden;}
+.panel::before{content:'';position:absolute;top:0;left:0;width:16px;height:16px;border-top:1px solid var(--cyan);border-left:1px solid var(--cyan);z-index:1;}
+.panel::after{content:'';position:absolute;bottom:0;right:0;width:16px;height:16px;border-bottom:1px solid var(--cyan);border-right:1px solid var(--cyan);z-index:1;}
+.p-tr{position:absolute;top:0;right:0;width:16px;height:16px;border-top:1px solid var(--cyan);border-right:1px solid var(--cyan);z-index:1;pointer-events:none;}
+.p-bl{position:absolute;bottom:0;left:0;width:16px;height:16px;border-bottom:1px solid var(--cyan);border-left:1px solid var(--cyan);z-index:1;pointer-events:none;}
+.panel-head{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:rgba(0,212,255,0.03);}
+.panel-title{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.15em;text-transform:uppercase;}
+.panel-title i{font-size:11px;}
+.panel-id{font-family:var(--mono);font-size:9px;color:var(--ink3);border:1px solid var(--line);padding:3px 8px;letter-spacing:.1em;}
+.panel-body{padding:20px;}
+
+/* FORM */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:14px;}
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fl{font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:.15em;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
+.fl::before{content:'//';opacity:.5;}
+
+/* SEG */
+.seg{display:flex;border:1px solid var(--line);margin-bottom:18px;}
+.seg-btn{flex:1;appearance:none;border:none;background:transparent;padding:9px 14px;color:var(--ink3);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:.15s;border-right:1px solid var(--line);}
+.seg-btn:last-child{border-right:none;}
+.seg-btn:hover{color:var(--ink2);background:rgba(0,212,255,.04);}
+.seg-btn.active{background:rgba(0,212,255,.1);color:var(--cyan);}
+
+/* RESULT */
+.result{margin-top:18px;padding-top:18px;border-top:1px dashed rgba(100,160,255,0.2);}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+.stat{background:var(--bp3);border:1px solid var(--line);padding:12px 14px;position:relative;}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--cyan),transparent);opacity:.4;}
+.stat-l{font-family:var(--mono);font-size:9px;color:var(--ink3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;}
+.stat-v{font-family:var(--mono);font-size:20px;color:var(--cyan);}
+.stat-v.orange{color:var(--orange);}
+.stat-v.green{color:var(--green);}
+.note{margin-top:14px;padding:10px 14px;background:var(--bp3);border-left:2px solid var(--orange);font-family:var(--mono);font-size:10px;color:var(--ink3);letter-spacing:.04em;}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;margin-top:14px;}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;}
+th{color:var(--cyan);font-size:9px;letter-spacing:.15em;text-transform:uppercase;background:rgba(0,212,255,.04);border-bottom:1px solid var(--line2);}
+td{color:var(--ink3);}
+tr:hover td{background:rgba(0,212,255,.03);}
+tr.hl td{color:var(--green);background:rgba(0,255,157,.05);}
+
+/* CALENDAR */
+.cal-top{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+.cal-label{font-family:var(--display);font-size:15px;font-weight:700;color:var(--cyan);min-width:110px;letter-spacing:.04em;}
+.cal-nav{display:flex;align-items:center;gap:6px;}
+.cal-selects{display:flex;gap:6px;}
+.cal-selects select,.cal-selects input{padding:8px 10px;font-size:10px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;background:var(--bp3);border:1px solid transparent;cursor:pointer;transition:.12s;color:var(--ink3);}
+.cal-cell:hover{border-color:var(--line2);color:var(--ink);}
+.cal-cell.dow{background:transparent;color:var(--ink3);font-size:9px;letter-spacing:.1em;cursor:default;opacity:.7;}
+.cal-cell.muted{opacity:.2;}
+.cal-cell.today{background:var(--cyang);border-color:var(--cyan);color:var(--cyan);font-weight:700;}
+
+/* GAME */
+.game-q{background:var(--bp3);border:1px solid var(--line2);padding:32px;text-align:center;margin-bottom:16px;font-family:var(--display);font-size:38px;font-weight:700;color:var(--cyan);letter-spacing:.04em;position:relative;text-shadow:0 0 30px var(--cyanglow);}
+.game-q::before{content:'CALCULATION //';position:absolute;top:8px;left:12px;font-family:var(--mono);font-size:8px;color:var(--ink3);letter-spacing:.15em;}
+.gs-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.gs{padding:7px 12px;background:var(--bp3);border:1px solid var(--line);font-family:var(--mono);font-size:10px;color:var(--ink3);letter-spacing:.06em;}
+.gs b{color:var(--cyan);}
+.gm{font-family:var(--mono);font-size:10px;margin-top:10px;letter-spacing:.06em;color:var(--ink3);}
+.gm.ok{color:var(--green);}
+.gm.err{color:var(--red);}
+
+/* DIAGRAM */
+.dia-wrap{overflow-x:auto;padding:10px 0;}
+
+/* TOAST */
+#toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--bp2);border:1px solid var(--line2);padding:12px 18px;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;box-shadow:0 4px 24px rgba(0,0,0,.5);transform:translateY(70px);opacity:0;transition:.25s cubic-bezier(.4,0,.2,1);}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.s{border-left:2px solid var(--green);}#toast.s i{color:var(--green);}
+#toast.e{border-left:2px solid var(--red);}#toast.e i{color:var(--red);}
+#toast.i{border-left:2px solid var(--cyan);}#toast.i i{color:var(--cyan);}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.shake{animation:shake .3s ease;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bp);}::-webkit-scrollbar-thumb{background:var(--line2);}
+
+@media(max-width:860px){
+  .sidebar{transform:translateX(-100%);box-shadow:4px 0 30px rgba(0,0,0,.8);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .topbar{display:none;}
+  .mob-bar{display:flex;}
+  .body{padding:16px;}
+  .grid{grid-template-columns:1fr;}
+  .btn-row{flex-direction:column;}
+  .btn-row .btn{width:100%;justify-content:center;}
+  .game-q{font-size:26px;padding:20px;}
+  #toast{left:12px;right:12px;bottom:12px;}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}.scanline{display:none;}}
+</style>
 </head>
 <body>
-  <!-- PIN Gate Overlay -->
-  <div id="gate" role="dialog" aria-modal="true">
-    <div class="gate-card">
-      <h2 class="gate-title">Enter PIN</h2>
-      <p class="gate-sub">This page is protected by RR Operations Team</p>
-      <div class="gate-row">
-        <input id="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••" aria-label="PIN" />
-        <button class="btn" id="unlockBtn">Unlock</button>
-      </div>
-      <div class="gate-err" id="gateErr"></div>
+<div class="scanline"></div>
+
+<!-- GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="g-tr"></div><div class="g-bl"></div>
+    <div class="gate-ref">DOC-RR-OPS-001 // ACCESS CONTROL</div>
+    <div class="gate-title">CABLE SOLUTIONS</div>
+    <div class="gate-sub">// RR OPERATIONS TEAM — SECURE PANEL</div>
+    <div class="gate-label">// ENTER ACCESS CODE</div>
+    <div class="gate-row">
+      <input id="pin" type="password" inputmode="numeric" maxlength="6" placeholder="_ _ _ _" autocomplete="off" autofocus/>
+      <button class="btn" id="unlockBtn"><span>UNLOCK</span></button>
     </div>
+    <div class="gate-err" id="gateErr"></div>
   </div>
+</div>
 
-  <div class="app">
-    <div class="hdr">
-      <h1 class="title3d">Wood Reel Selector</h1>
-      <div class="powered">Powered by <b>RR Operations Team</b></div>
+<div class="overlay" id="overlay"></div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-head">
+      <div class="sb-ref">SYS:RR-OPS // v2.0</div>
+      <div class="sb-logo-row">
+        <div class="sb-badge">RR</div>
+        <div>
+          <div class="sb-title">CABLE SOLUTIONS</div>
+          <div class="sb-sub">RR OPERATIONS TEAM</div>
+        </div>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">MAIN</div>
+      <button class="nav-btn active" data-page="home"><i class="fas fa-th-large"></i>DASHBOARD</button>
+      <div class="nav-group">CALC</div>
+      <button class="nav-btn" data-page="selector"><i class="fas fa-calculator"></i>REEL SELECTOR</button>
+      <button class="nav-btn" data-page="dimension"><i class="fas fa-drafting-compass"></i>REEL DIMENSION</button>
+      <button class="nav-btn" data-page="standard"><i class="fas fa-table"></i>STANDARD REELS</button>
+      <button class="nav-btn" data-page="copper"><i class="fas fa-exchange-alt"></i>COPPER CONV.</button>
+      <button class="nav-btn" data-page="pvc"><i class="fas fa-weight-hanging"></i>PVC WEIGHT</button>
+    </nav>
+    <div class="sb-footer">CREATED BY<br><em>RR OPERATIONS TEAM</em><br>CABLE SOLUTIONS © 2025</div>
+  </aside>
+
+  <main class="main">
+    <div class="mob-bar">
+      <div class="mob-brand">
+        <div class="mob-badge">RR</div>
+        <span class="mob-title">CABLE SOLUTIONS</span>
+      </div>
+      <div class="burger" id="burger"><i class="fas fa-bars"></i></div>
+    </div>
+    <div class="topbar">
+      <div class="tb-left">
+        <div class="tb-ref" id="tbRef">DOC-01</div>
+        <div class="tb-title" id="tbTitle">DASHBOARD</div>
+      </div>
+      <div class="tb-right">
+        <div class="tb-dot"></div>
+        <div class="tb-time" id="tbTime">--:--</div>
+      </div>
     </div>
 
-    <!-- 01. Reel Selector -->
-    <details class="acd" open>
-      <summary>01. Reel Selector</summary>
-      <div class="acd-body">
-        <div class="seg">
-          <button id="mode-regular" class="active" onclick="setMode('regular')">Regular</button>
-          <button id="mode-custom" onclick="setMode('custom')">Customized</button>
-        </div>
+    <div class="body">
 
-        <!-- Regular mode -->
-        <div id="panel-regular" class="card">
-          <div class="grid">
-            <div>
-              <label>Cable OD (mm)</label>
-              <input id="r-cable-od" type="number" min="1" step="0.1" placeholder="e.g., 31">
-            </div>
-            <div>
-              <label>Length (m)</label>
-              <input id="r-length" type="number" min="1" step="1" placeholder="e.g., 1050">
+      <!-- HOME -->
+      <section id="home" class="page active">
+        <div class="panel">
+          <div class="p-tr"></div><div class="p-bl"></div>
+          <div class="panel-head">
+            <div class="panel-title"><i class="fas fa-calendar-alt"></i>CALENDAR MODULE</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <button class="btn btn-dim" id="calToday" style="padding:6px 12px;font-size:10px;"><span>TODAY</span></button>
+              <div class="panel-id">CAL-01</div>
             </div>
           </div>
-          <div class="row">
-            <button class="btn" onclick="computeRegular()">Calculate</button>
-            <button class="btn-ghost" onclick="resetRegular()">Reset</button>
-            <button class="btn-ghost" onclick="copyRegular()" id="r-copy">Copy</button>
-          </div>
-          <div id="r-out" class="result"></div>
-        </div>
-
-        <!-- Customized mode -->
-        <div id="panel-custom" class="card" style="display:none">
-          <div class="grid">
-            <div>
-              <label>Cable OD (mm)</label>
-              <input id="c-cable-od" type="number" min="1" step="0.1" placeholder="e.g., 31">
+          <div class="panel-body">
+            <div class="cal-top">
+              <div class="cal-nav">
+                <div class="icon-btn" id="calPrev"><i class="fas fa-chevron-left"></i></div>
+                <span class="cal-label" id="calLabel">JAN 2025</span>
+                <div class="icon-btn" id="calNext"><i class="fas fa-chevron-right"></i></div>
+              </div>
+              <div class="cal-selects">
+                <select id="calMonth"></select>
+                <input id="calYear" type="number" min="1900" max="2100" style="width:78px;">
+              </div>
             </div>
-            <div>
-              <label>Reel OD (mm)</label>
-              <input id="c-rod" type="number" min="100" step="1" placeholder="e.g., 1600">
-            </div>
-            <div>
-              <label>Barrel ID (mm)</label>
-              <input id="c-rid" type="number" min="50" step="1" placeholder="e.g., 800">
-            </div>
-            <div>
-              <label>Traverse (mm)</label>
-              <input id="c-trv" type="number" min="50" step="1" placeholder="e.g., 800">
-            </div>
-          </div>
-          <div class="row">
-            <button class="btn" onclick="computeCustom()">Calculate</button>
-            <button class="btn-ghost" onclick="resetCustom()">Reset</button>
-            <button class="btn-ghost" onclick="copyCustom()" id="c-copy">Copy</button>
-          </div>
-          <div id="c-out" class="result"></div>
-        </div>
-      </div>
-    </details>
-
-    <!-- 02. Reel Dimension -->
-    <details class="acd">
-      <summary>02. Reel Dimension</summary>
-      <div class="acd-body">
-        <div class="card">
-          <div class="svg-wrap">
-            <svg viewBox="0 0 900 320" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" aria-label="Wooden reel dimension diagram">
-              <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 Z" fill="#111"/></marker></defs>
-              <g font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="14" fill="#111" stroke="#111" stroke-width="2">
-                <g transform="translate(150,160)">
-                  <circle cx="0" cy="0" r="110" fill="none" stroke="#111"/>
-                  <circle cx="0" cy="0" r="55" fill="none" stroke="#111"/>
-                  <line x1="-140" y1="-110" x2="-140" y2="110" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-                  <text x="-180" y="0" transform="rotate(-90 -180,0)" text-anchor="middle">OD — Flange Diameter</text>
-                  <line x1="140" y1="-55" x2="140" y2="55" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-                  <text x="170" y="0" transform="rotate(-90 170,0)" text-anchor="middle">Barrel ID — Core/Drum</text>
-                  <text x="0" y="140" text-anchor="middle" font-weight="700">Front View</text>
-                </g>
-                <g transform="translate(540,60)">
-                  <rect x="0" y="0" width="22" height="200" fill="#fff"/>
-                  <rect x="22" y="40" width="156" height="120" fill="#fff"/>
-                  <rect x="178" y="0" width="22" height="200" fill="#fff"/>
-                  <line x1="22" y1="230" x2="178" y2="230" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-                  <text x="100" y="252" text-anchor="middle">Traverse — Between Flanges</text>
-                  <text x="100" y="-12" text-anchor="middle" font-weight="700">Side View</text>
-                </g>
-                <g transform="translate(30,300)" font-size="12">
-                  <text>• <tspan font-weight="700">OD</tspan> = Flange outer diameter (mm)</text>
-                  <text x="250">• <tspan font-weight="700">Barrel ID</tspan> = Core/Drum diameter (mm)</text>
-                  <text x="530">• <tspan font-weight="700">Traverse</tspan> = Distance between flanges (mm)</text>
-                </g>
-              </g>
-            </svg>
+            <div class="cal-grid" id="calGrid"></div>
           </div>
         </div>
-      </div>
-    </details>
 
-    <!-- 03. Standard Wood Reel -->
-    <details class="acd">
-      <summary>03. Standard Wood Reel</summary>
-      <div class="acd-body">
-        <div class="card">
-          <div class="grid">
-            <div>
-              <label>Cable OD (mm)</label>
-              <input id="t-od" type="number" min="1" step="0.1" placeholder="e.g., 31" value="31">
+        <div class="panel">
+          <div class="p-tr"></div><div class="p-bl"></div>
+          <div class="panel-head">
+            <div class="panel-title"><i class="fas fa-microchip"></i>COGNITIVE TRAINING — RAPID CALC</div>
+            <div class="panel-id">GAME-01</div>
+          </div>
+          <div class="panel-body">
+            <div class="game-q" id="qText">INITIALIZING...</div>
+            <div class="grid" style="grid-template-columns:1fr auto;gap:10px;">
+              <input id="ans" type="number" inputmode="numeric" placeholder="// enter result" disabled>
+              <button class="btn" id="submitAns" disabled><span>SUBMIT</span></button>
             </div>
-            <div>
-              <label>Length (m) <span style="color:var(--muted)">(optional)</span></label>
-              <input id="t-len" type="number" min="1" step="1" placeholder="e.g., 1050">
+            <div class="btn-row">
+              <button class="btn btn-orange" id="start60"><span>▶ START 60s</span></button>
+              <button class="btn btn-dim" id="nextQ" disabled><span>NEXT</span></button>
+              <button class="btn btn-dim" id="stopGame" disabled><span>■ STOP</span></button>
+            </div>
+            <div class="gs-row">
+              <div class="gs">TIME <b id="gTime">—</b></div>
+              <div class="gs">SCORE <b id="gScore">0</b></div>
+              <div class="gs">✓ <b id="gRight">0</b></div>
+              <div class="gs">✗ <b id="gWrong">0</b></div>
+              <div class="gs">STREAK <b id="gStreak">0</b></div>
+              <div class="gs">ACC <b id="gAcc">0%</b></div>
+            </div>
+            <div class="gm" id="gHint">// NORMAL LEVEL: +, -, × WITH 1–2 DIGIT NUMBERS. ENTER TO SUBMIT.</div>
+            <div class="gm" id="gMsg"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- REEL SELECTOR -->
+      <section id="selector" class="page">
+        <div class="panel">
+          <div class="p-tr"></div><div class="p-bl"></div>
+          <div class="panel-head">
+            <div class="panel-title"><i class="fas fa-calculator"></i>REEL SELECTOR ENGINE</div>
+            <div class="panel-id">CALC-01</div>
+          </div>
+          <div class="panel-body">
+            <div class="seg">
+              <button class="seg-btn active" id="mode-regular">REGULAR</button>
+              <button class="seg-btn" id="mode-custom">CUSTOM</button>
+            </div>
+            <div id="panel-regular">
+              <div class="grid">
+                <div class="fg"><label class="fl">Cable OD (mm)</label><input id="r-od" type="number" min="1" step=".1" placeholder="e.g. 31.0"></div>
+                <div class="fg"><label class="fl">Length (m)</label><input id="r-len" type="number" min="1" step="1" placeholder="e.g. 1050"></div>
+              </div>
+              <div class="btn-row">
+                <button class="btn" onclick="calcRegular()"><span>⚡ CALCULATE</span></button>
+                <button class="btn btn-dim" onclick="resetRegular()"><span>RESET</span></button>
+                <button class="btn btn-dim" onclick="copyOut('r-out')"><span>COPY</span></button>
+              </div>
+              <div id="r-out" class="result"></div>
+            </div>
+            <div id="panel-custom" style="display:none;">
+              <div class="grid">
+                <div class="fg"><label class="fl">Cable OD (mm)</label><input id="c-od" type="number" min="1" step=".1" placeholder="e.g. 31.0"></div>
+                <div class="fg"><label class="fl">Reel OD (mm)</label><input id="c-rod" type="number" min="100" step="1" placeholder="e.g. 1600"></div>
+                <div class="fg"><label class="fl">Barrel ID (mm)</label><input id="c-rid" type="number" min="50" step="1" placeholder="e.g. 800"></div>
+                <div class="fg"><label class="fl">Traverse (mm)</label><input id="c-trv" type="number" min="50" step="1" placeholder="e.g. 800"></div>
+              </div>
+              <div class="btn-row">
+                <button class="btn" onclick="calcCustom()"><span>⚡ CALCULATE</span></button>
+                <button class="btn btn-dim" onclick="resetCustom()"><span>RESET</span></button>
+                <button class="btn btn-dim" onclick="copyOut('c-out')"><span>COPY</span></button>
+              </div>
+              <div id="c-out" class="result"></div>
             </div>
           </div>
-          <div class="row">
-            <button class="btn" onclick="buildReelTable()">Update</button>
+        </div>
+      </section>
+
+      <!-- DIMENSION -->
+      <section id="dimension" class="page">
+        <div class="panel">
+          <div class="p-tr"></div><div class="p-bl"></div>
+          <div class="panel-head">
+            <div class="panel-title"><i class="fas fa-drafting-compass"></i>REEL DIMENSION — TECHNICAL DRAWING</div>
+            <div class="panel-id">DWG-01</div>
           </div>
-          <table class="tbl mono" id="reel-table"></table>
-          <div class="note">Capacities use your factory calibration (PF = 0.7855) at 90% fill. Geometric @90% is higher and shown only in the selector for reference.</div>
+          <div class="panel-body">
+            <div class="dia-wrap">
+              <svg viewBox="0 0 860 310" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="a1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L6,3 L0,6 Z" fill="#00d4ff"/></marker>
+                  <marker id="a2" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M6,0 L0,3 L6,6 Z" fill="#00d4ff"/></marker>
+                  <pattern id="rg" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10,0 L0,0 0,10" fill="none" stroke="rgba(0,212,255,0.06)" stroke-width="0.5"/></pattern>
+                </defs>
+                <rect width="860" height="310" fill="url(#rg)" opacity=".5"/>
+                <rect x="650" y="268" width="200" height="38" fill="none" stroke="rgba(0,212,255,0.2)" stroke-width="1"/>
+                <line x1="650" y1="283" x2="850" y2="283" stroke="rgba(0,212,255,0.2)" stroke-width="1"/>
+                <text x="660" y="279" font-family="'Share Tech Mono',monospace" font-size="8" fill="#4a7aaa" letter-spacing="1">REEL DIMENSION REF</text>
+                <text x="660" y="299" font-family="'Share Tech Mono',monospace" font-size="8" fill="#4a7aaa" letter-spacing="1">RR-OPS // DWG-01</text>
+                <line x1="172" y1="20" x2="172" y2="260" stroke="rgba(0,212,255,0.15)" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="40" y1="152" x2="306" y2="152" stroke="rgba(0,212,255,0.15)" stroke-width="1" stroke-dasharray="4,4"/>
+                <circle cx="172" cy="152" r="108" fill="rgba(0,212,255,0.03)" stroke="rgba(0,212,255,0.3)" stroke-width="1.5"/>
+                <circle cx="172" cy="152" r="54" fill="rgba(0,212,255,0.05)" stroke="rgba(0,212,255,0.3)" stroke-width="1.5" stroke-dasharray="4,3"/>
+                <line x1="130" y1="44" x2="130" y2="260" stroke="#00d4ff" stroke-width="1" marker-start="url(#a2)" marker-end="url(#a1)"/>
+                <line x1="130" y1="44" x2="172" y2="44" stroke="rgba(0,212,255,0.3)" stroke-width=".8" stroke-dasharray="3,3"/>
+                <line x1="130" y1="260" x2="172" y2="260" stroke="rgba(0,212,255,0.3)" stroke-width=".8" stroke-dasharray="3,3"/>
+                <rect x="58" y="142" width="65" height="20" fill="#0d1f3c"/>
+                <text x="90" y="156" font-family="'Share Tech Mono',monospace" font-size="9" fill="#00d4ff" text-anchor="middle" letter-spacing=".5">FLANGE OD</text>
+                <line x1="214" y1="98" x2="214" y2="206" stroke="#ffd700" stroke-width="1" marker-start="url(#a2)" marker-end="url(#a1)"/>
+                <line x1="172" y1="98" x2="220" y2="98" stroke="rgba(255,215,0,0.3)" stroke-width=".8" stroke-dasharray="3,3"/>
+                <line x1="172" y1="206" x2="220" y2="206" stroke="rgba(255,215,0,0.3)" stroke-width=".8" stroke-dasharray="3,3"/>
+                <text x="228" y="157" font-family="'Share Tech Mono',monospace" font-size="9" fill="#ffd700" letter-spacing=".5">BARREL ID</text>
+                <text x="172" y="290" font-family="'Share Tech Mono',monospace" font-size="9" fill="#00d4ff" text-anchor="middle" letter-spacing="2">FRONT VIEW</text>
+                <rect x="450" y="52" width="18" height="200" fill="rgba(0,212,255,0.06)" stroke="rgba(0,212,255,0.4)" stroke-width="1.5"/>
+                <rect x="468" y="94" width="164" height="116" fill="rgba(0,212,255,0.03)" stroke="rgba(0,212,255,0.25)" stroke-width="1"/>
+                <rect x="632" y="52" width="18" height="200" fill="rgba(0,212,255,0.06)" stroke="rgba(0,212,255,0.4)" stroke-width="1.5"/>
+                <line x1="468" y1="274" x2="632" y2="274" stroke="#ff8c00" stroke-width="1" marker-start="url(#a2)" marker-end="url(#a1)"/>
+                <line x1="468" y1="252" x2="468" y2="278" stroke="rgba(255,140,0,0.3)" stroke-width=".8"/>
+                <line x1="632" y1="252" x2="632" y2="278" stroke="rgba(255,140,0,0.3)" stroke-width=".8"/>
+                <rect x="492" y="264" width="116" height="18" fill="#0d1f3c"/>
+                <text x="550" y="277" font-family="'Share Tech Mono',monospace" font-size="9" fill="#ff8c00" text-anchor="middle" letter-spacing=".5">TRAVERSE</text>
+                <text x="550" y="297" font-family="'Share Tech Mono',monospace" font-size="8" fill="#4a7aaa" text-anchor="middle" letter-spacing="1">BETWEEN FLANGES</text>
+                <text x="550" y="20" font-family="'Share Tech Mono',monospace" font-size="9" fill="#00d4ff" text-anchor="middle" letter-spacing="2">SIDE VIEW</text>
+                <line x1="440" y1="152" x2="660" y2="152" stroke="rgba(0,212,255,0.12)" stroke-width="1" stroke-dasharray="4,4"/>
+              </svg>
+            </div>
+          </div>
         </div>
-      </div>
-    </details>
-  </div>
+      </section>
 
-  <script>
-    // 90% fill with factory calibration so 1600×800×800 at d=31 → ~1130 m
-    const FILL = 0.90;        // 90% target
-    const PF_CAL = 0.7855;    // factory calibration factor
-
-    const reels = [
-      {reel:560,  od:560,  id:250, traverse:300},
-      {reel:600,  od:600,  id:400, traverse:315},
-      {reel:610,  od:610,  id:300, traverse:400},
-      {reel:700,  od:700,  id:400, traverse:355},
-      {reel:800,  od:800,  id:400, traverse:400},
-      {reel:900,  od:900,  id:565, traverse:400},
-      {reel:1000, od:1000, id:565, traverse:450},
-      {reel:1100, od:1100, id:600, traverse:500},
-      {reel:1200, od:1200, id:700, traverse:600},
-      {reel:1400, od:1400, id:800, traverse:700},
-      {reel:1600, od:1600, id:800, traverse:800},
-      {reel:1800, od:1800, id:850, traverse:900},
-      {reel:2000, od:2000, id:970, traverse:900}
-    ];
-
-    function cap90_geometric(rod,rid,trv,d){ return FILL * (trv*((rod*rod - rid*rid)/(d*d)))/1000 }
-    function cap90_factory(rod,rid,trv,d){ return PF_CAL * cap90_geometric(rod,rid,trv,d) }
-    function fmtMeters(x){ if(!isFinite(x)) return '—'; return new Intl.NumberFormat(undefined,{maximumFractionDigits:0}).format(x) }
-
-    // Mode switch for Reel Selector
-    function setMode(m){
-      const r = document.getElementById('panel-regular');
-      const c = document.getElementById('panel-custom');
-      const br = document.getElementById('mode-regular');
-      const bc = document.getElementById('mode-custom');
-      if(m==='regular'){ r.style.display='block'; c.style.display='none'; br.classList.add('active'); bc.classList.remove('active'); }
-      else{ r.style.display='none'; c.style.display='block'; bc.classList.add('active'); br.classList.remove('active'); }
-    }
-
-    function computeRegular(){
-      const d = +document.getElementById('r-cable-od').value;
-      const L = +document.getElementById('r-length').value;
-      const out = document.getElementById('r-out');
-      if(d<=0||L<=0){out.innerHTML = `<div>Please enter Cable OD and Length.</div>`;return}
-      let best = null;
-      for(const r of reels){ const capF = cap90_factory(r.od,r.id,r.traverse,d); if(capF>=L){best = {...r, capF, capG:cap90_geometric(r.od,r.id,r.traverse,d)}; break} }
-      if(!best){
-        const last=reels[reels.length-1];
-        const capF=cap90_factory(last.od,last.id,last.traverse,d);
-        out.innerHTML = `<div class="pill">Exceeds largest reel. Max standard: <b>${last.reel} × ${last.id} × ${last.traverse}</b> → <b class="mono">${fmtMeters(capF)} m</b> (factory)</div>`;
-        return
-      }
-      const usage = L/best.capF*100;
-      out.innerHTML = `
-        <div class="caps">
-          <div class="pill">Reel: <b>${best.reel} × ${best.id} × ${best.traverse}</b> mm</div>
-          <div class="pill">Cap @90% (factory): <b class="mono">${fmtMeters(best.capF)} m</b></div>
+      <!-- STANDARD REELS -->
+      <section id="standard" class="page">
+        <div class="panel">
+          <div class="p-tr"></div><div class="p-bl"></div>
+          <div class="panel-head">
+            <div class="panel-title"><i class="fas fa-table"></i>STANDARD WOOD REEL — DATA TABLE</div>
+            <div class="panel-id">TBL-01</div>
+          </div>
+          <div class="panel-body">
+            <div class="grid">
+              <div class="fg"><label class="fl">Cable OD (mm)</label><input id="t-od" type="number" min="1" step=".1" placeholder="e.g. 31" value="31"></div>
+              <div class="fg"><label class="fl">Length (m) — optional</label><input id="t-len" type="number" min="1" step="1" placeholder="e.g. 1050"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn" onclick="buildTable()"><span>↻ REFRESH TABLE</span></button>
+            </div>
+            <div class="tbl-wrap"><table id="reel-tbl"></table></div>
+            <div class="note">// CAPACITIES USE FACTORY CALIBRATION (PF = 0.7855) AT 90% FILL RATIO</div>
+          </div>
         </div>
-        <div class="caps" style="margin-top:6px">
-          <div class="pill">Length: <b class="mono">${fmtMeters(L)} m</b></div>
-          <div class="pill">Usage: <b class="mono">${usage.toFixed(1)}%</b></div>
+      </section>
+
+      <!-- COPPER -->
+      <section id="copper" class="page">
+        <div class="panel">
+          <div class="p-tr"></div><div class="p-bl"></div>
+          <div class="panel-head">
+            <div class="panel-title"><i class="fas fa-exchange-alt"></i>COPPER CONVERSION CALCULATOR</div>
+            <div class="panel-id">CALC-02</div>
+          </div>
+          <div class="panel-body">
+            <div class="fg" style="margin-bottom:16px;">
+              <label class="fl">Material Type</label>
+              <div class="seg">
+                <button class="seg-btn active" id="cu-tStrip">STRIP</button>
+                <button class="seg-btn" id="cu-tRod">BARE ROD / WIRE</button>
+                <button class="seg-btn" id="cu-tRM">BARE CABLE (RM)</button>
+              </div>
+            </div>
+            <div class="fg" style="margin-bottom:16px;">
+              <label class="fl">Conversion Mode</label>
+              <select id="cu-mode">
+                <option>Kg to Meter</option><option>Kg to Ft</option>
+                <option>Meter to Kg</option><option>Ft to Kg</option>
+              </select>
+            </div>
+            <div class="grid">
+              <div class="fg only-strip"><label class="fl">Width (mm)</label><input id="cu-w" type="number" step="any" placeholder="e.g. 10"></div>
+              <div class="fg only-strip"><label class="fl">Thickness (mm)</label><input id="cu-t" type="number" step="any" placeholder="e.g. 3"></div>
+              <div class="fg only-rod" style="display:none;"><label class="fl">Diameter (mm)</label><input id="cu-d" type="number" step="any" placeholder="e.g. 12"></div>
+              <div class="fg only-rm" style="display:none;"><label class="fl">Cable Size (mm²)</label><input id="cu-a" type="number" step="any" placeholder="e.g. 1.3"></div>
+              <div class="fg" style="grid-column:1/-1;"><label class="fl" id="cu-gl">Given Kg</label><input id="cu-g" type="number" step="any" placeholder="e.g. 500"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-dim" id="cu-reset"><span>RESET</span></button>
+              <button class="btn btn-dim" id="cu-swap"><span>⇅ SWAP MODE</span></button>
+              <button class="btn btn-dim" id="cu-copy"><span>COPY</span></button>
+            </div>
+            <div class="result">
+              <div class="stat-row">
+                <div class="stat"><div class="stat-l">CROSS SECTION (mm²)</div><div class="stat-v" id="cu-area">—</div></div>
+                <div class="stat"><div class="stat-l">MASS PER METER (kg/m)</div><div class="stat-v" id="cu-kgpm">—</div></div>
+              </div>
+              <div style="margin-top:16px;font-family:var(--mono);font-size:15px;color:var(--cyan);letter-spacing:.04em;" id="cu-rh">// RESULT: —</div>
+              <div class="note" id="cu-rs">// ENTER DIMENSIONS AND VALUE TO COMPUTE.</div>
+            </div>
+          </div>
         </div>
-        <div class="note">Geometric @90% (no calibration): ${fmtMeters(best.capG)} m</div>`;
-    }
+      </section>
 
-    function computeCustom(){
-      const d = +document.getElementById('c-cable-od').value;
-      const rod = +document.getElementById('c-rod').value;
-      const rid = +document.getElementById('c-rid').value;
-      const trv = +document.getElementById('c-trv').value;
-      const out = document.getElementById('c-out');
-      if(d<=0||rod<=0||rid<=0||trv<=0){out.innerHTML = `<div>Please enter all reel and cable values.</div>`;return}
-      if(rid>=rod){out.innerHTML = `<div>Barrel ID must be smaller than Reel OD.</div>`;return}
-      const capG100 = (trv * ((rod*rod - rid*rid)/(d*d)))/1000; // 100% geometric
-      const cap90G  = cap90_geometric(rod,rid,trv,d);
-      const cap90F  = cap90_factory(rod,rid,trv,d);
-      out.innerHTML = `
-        <div class="caps">
-          <div class="pill">Cap @90% (factory): <b class="mono">${fmtMeters(cap90F)} m</b></div>
-          <div class="pill">@100% (geometric): <b class="mono">${fmtMeters(capG100)}</b> m</div>
+      <!-- PVC -->
+      <section id="pvc" class="page">
+        <div class="panel">
+          <div class="p-tr"></div><div class="p-bl"></div>
+          <div class="panel-head">
+            <div class="panel-title"><i class="fas fa-weight-hanging"></i>PVC WEIGHT PARAMETERS</div>
+            <div class="panel-id">CALC-03</div>
+          </div>
+          <div class="panel-body">
+            <div class="seg">
+              <button class="seg-btn active" id="pv-sc-btn">SINGLE-CORE</button>
+              <button class="seg-btn" id="pv-mc-btn">MULTICORE</button>
+            </div>
+            <div class="grid">
+              <div class="fg"><label class="fl">Density (g/cm³)</label><input id="pv-rho" type="number" step=".01" value="1.55"></div>
+              <div class="fg"><label class="fl">Length (m)</label><input id="pv-L" type="number" step="1" value="1000"></div>
+            </div>
+          </div>
         </div>
-        <div class="note">Geometric @90% (no calibration): ${fmtMeters(cap90G)} m</div>
-        <table class="tbl mono" style="margin-top:8px">
-          <tr><th>Cable OD</th><th>Reel OD</th><th>Barrel ID</th><th>Traverse</th></tr>
-          <tr><td>${d} mm</td><td>${rod} mm</td><td>${rid} mm</td><td>${trv} mm</td></tr>
-        </table>`;
-    }
+        <div id="pv-sc-card" class="panel">
+          <div class="p-tr"></div><div class="p-bl"></div>
+          <div class="panel-head">
+            <div class="panel-title"><i class="fas fa-circle-notch"></i>SINGLE-CORE CONFIGURATION</div>
+            <div class="panel-id">CALC-03A</div>
+          </div>
+          <div class="panel-body">
+            <div class="grid">
+              <div class="fg"><label class="fl">Bare Cu OD (mm)</label><input id="pv-sc-cu" type="number" step=".01" placeholder="e.g. 16.5"></div>
+              <div class="fg"><label class="fl">Insulation thickness (mm)</label><input id="pv-sc-ins" type="number" step=".01" placeholder="e.g. 2.0"></div>
+              <div class="fg"><label class="fl">Sheath thickness (mm)</label><input id="pv-sc-sh" type="number" step=".01" placeholder="e.g. 2.0"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="pv-sc-calc"><span>⚡ CALCULATE</span></button>
+              <button class="btn btn-dim" id="pv-sc-rst"><span>RESET</span></button>
+              <button class="btn btn-dim" id="pv-sc-cp"><span>COPY</span></button>
+            </div>
+            <div class="result" id="pv-sc-out" style="font-family:var(--mono);font-size:12px;line-height:2.2;letter-spacing:.04em;"></div>
+            <div class="note">// PVC MASS INCLUDES INSULATION + OUTER SHEATH. Cu DENSITY: 8.96 g/cm³</div>
+          </div>
+        </div>
+        <div id="pv-mc-card" class="panel" style="display:none;">
+          <div class="p-tr"></div><div class="p-bl"></div>
+          <div class="panel-head">
+            <div class="panel-title"><i class="fas fa-layer-group"></i>MULTICORE CONFIGURATION</div>
+            <div class="panel-id">CALC-03B</div>
+          </div>
+          <div class="panel-body">
+            <div class="grid">
+              <div class="fg"><label class="fl">Number of cores</label><input id="pv-mc-n" type="number" step="1" value="4"></div>
+              <div class="fg"><label class="fl">Bare Cu OD per core (mm)</label><input id="pv-mc-cu" type="number" step=".01" placeholder="e.g. 4.7"></div>
+              <div class="fg"><label class="fl">Insulation thickness (mm)</label><input id="pv-mc-ins" type="number" step=".01" placeholder="e.g. 1.0"></div>
+              <div class="fg"><label class="fl">Inner sheath (mm)</label><input id="pv-mc-inner" type-number step=".01" placeholder="e.g. 1.2"></div>
+              <div class="fg"><label class="fl">Outer sheath (mm)</label><input id="pv-mc-sh" type="number" step=".01" placeholder="e.g. 2.0"></div>
+              <div class="fg"><label class="fl">Inner OD before sheath (mm)</label><input id="pv-mc-innerOD" type="number" step=".01" placeholder="Optional — if known"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="pv-mc-calc"><span>⚡ CALCULATE</span></button>
+              <button class="btn btn-dim" id="pv-mc-est"><span>EST. INNER OD</span></button>
+              <button class="btn btn-dim" id="pv-mc-rst"><span>RESET</span></button>
+              <button class="btn btn-dim" id="pv-mc-cp"><span>COPY</span></button>
+            </div>
+            <div class="result" id="pv-mc-out" style="font-family:var(--mono);font-size:12px;line-height:2.2;letter-spacing:.04em;"></div>
+            <div class="note">// ESTIMATE SUPPORTS N = 1–4. TOTAL PVC = N × INSULATION + INNER + OUTER SHEATH.</div>
+          </div>
+        </div>
+      </section>
 
-    function buildReelTable(){
-      const d = +document.getElementById('t-od').value;
-      const L = +document.getElementById('t-len').value;
-      const t = document.getElementById('reel-table');
-      if(!(d>0)){ t.innerHTML = '<tr><td>Please enter Cable OD.</td></tr>'; return }
-      const header = `<tr><th>Reel</th><th>OD</th><th>ID (Barrel)</th><th>Traverse</th><th>Cap @90% (factory, m)</th>${L>0?'<th>Fits '+fmtMeters(L)+' m?</th>':''}</tr>`;
-      const rows = reels.map(r=>{
-        const capF = cap90_factory(r.od,r.id,r.traverse,d);
-        const fits = L>0 ? (capF>=L? 'Yes' : 'No') : '';
-        const mark = L>0 && capF>=L ? ' style="font-weight:700"' : '';
-        return `<tr${mark}><td>${r.reel}</td><td>${r.od}</td><td>${r.id}</td><td>${r.traverse}</td><td>${fmtMeters(capF)}</td>${L>0?`<td>${fits}</td>`:''}</tr>`
-      });
-      t.innerHTML = [header, ...rows].join('');
-    }
+    </div>
+  </main>
+</div>
 
-    function resetRegular(){ document.getElementById('r-cable-od').value=''; document.getElementById('r-length').value=''; document.getElementById('r-out').innerHTML='' }
-    function resetCustom(){ document.getElementById('c-cable-od').value=''; document.getElementById('c-rod').value=''; document.getElementById('c-rid').value=''; document.getElementById('c-trv').value=''; document.getElementById('c-out').innerHTML='' }
+<div id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg">OK</span></div>
 
-    async function copyText(txt){ try{ await navigator.clipboard.writeText(txt); return true } catch(e){ const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); const ok=document.execCommand('copy'); document.body.removeChild(ta); return ok } }
-    async function copyRegular(){ const box=document.getElementById('r-out'); const btn=document.getElementById('r-copy'); const txt=box.innerText.trim(); if(!txt){btn.textContent='Copy';return} const ok=await copyText(txt); btn.textContent= ok? 'Copied!' : 'Copy'; setTimeout(()=>btn.textContent='Copy',1200) }
-    async function copyCustom(){ const box=document.getElementById('c-out'); const btn=document.getElementById('c-copy'); const txt=box.innerText.trim(); if(!txt){btn.textContent='Copy';return} const ok=await copyText(txt); btn.textContent= ok? 'Copied!' : 'Copy'; setTimeout(()=>btn.textContent='Copy',1200) }
+<script>
+const $=id=>document.getElementById(id);
+const FMT=n=>isFinite(n)?new Intl.NumberFormat(undefined,{maximumFractionDigits:0}).format(n):'—';
+function toast(msg,type='s'){const t=$('toast'),m=$('toast-msg');t.className='show '+type;m.textContent=msg;clearTimeout(t._t);t._t=setTimeout(()=>t.className=type,3000);}
+async function copyText(txt){try{await navigator.clipboard.writeText(txt);toast('// COPIED TO CLIPBOARD');}catch{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('// COPIED');}}
+function copyOut(id){const el=$(id);if(el&&el.innerText.trim())copyText(el.innerText.trim());}
 
-    // ===== PIN logic (minimal) =====
-    const PIN_CODE = "1234"; // ← change this to your PIN (digits)
-    const MAX_TRIES = 5;
-    let tries = 0;
+function tick(){const d=new Date();const el=$('tbTime');if(el)el.textContent=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});}
+tick();setInterval(tick,10000);
 
-    function hideGate(){ const g=document.getElementById('gate'); if(g) g.style.display='none'; }
-    function showGate(){ const g=document.getElementById('gate'); if(g) g.style.display='flex'; }
+const PIN='1234',MAX=5;let tries=0;
+function unlock(){const v=$('pin').value.trim(),err=$('gateErr');if(v===PIN){sessionStorage.setItem('cs','1');$('gate').style.display='none';toast('// ACCESS GRANTED','i');return;}tries++;err.textContent='// WRONG CODE ('+tries+'/'+MAX+')';$('unlockBtn').classList.add('shake');setTimeout(()=>$('unlockBtn').classList.remove('shake'),300);if(tries>=MAX){err.textContent='// SYSTEM LOCKED — RELOAD TO RETRY';$('unlockBtn').disabled=true;}$('pin').value='';$('pin').focus();}
+$('unlockBtn').addEventListener('click',unlock);
+$('pin').addEventListener('keydown',e=>{if(e.key==='Enter')unlock();});
+if(sessionStorage.getItem('cs')==='1')$('gate').style.display='none';
 
-    function tryUnlock(){
-      const inp = document.getElementById('pin');
-      const err = document.getElementById('gateErr');
-      const btn = document.getElementById('unlockBtn');
-      const v = (inp.value||'').trim();
-      if(v === PIN_CODE){
-        err.textContent = '';
-        sessionStorage.setItem('reel_unlocked','1');
-        document.querySelector('.gate-card').classList.add('fade');
-        setTimeout(()=>{ hideGate(); }, 550);
-        return;
-      }
-      tries++;
-      err.textContent = `Wrong PIN (${tries}/${MAX_TRIES})`;
-      btn.classList.add('shake'); setTimeout(()=>btn.classList.remove('shake'),220);
-      if(tries>=MAX_TRIES){ err.textContent = 'Locked — reload page to try again.'; btn.disabled=true; }
-      inp.value=''; inp.focus();
-    }
+const pages=['home','selector','dimension','standard','copper','pvc'];
+const meta={home:{title:'DASHBOARD',ref:'DOC-01'},selector:{title:'REEL SELECTOR',ref:'CALC-01'},dimension:{title:'REEL DIMENSION',ref:'DWG-01'},standard:{title:'STANDARD REELS',ref:'TBL-01'},copper:{title:'COPPER CONVERSION',ref:'CALC-02'},pvc:{title:'PVC WEIGHT',ref:'CALC-03'}};
+function goTo(id){pages.forEach(p=>{const s=$(p);if(s)s.classList.toggle('active',p===id);});document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===id));const m=meta[id];if(m){$('tbTitle').textContent=m.title;$('tbRef').textContent=m.ref;}if(window.innerWidth<=860){$('sidebar').classList.remove('open');$('overlay').classList.remove('on');}window.scrollTo({top:0,behavior:'smooth'});}
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.page)));
+$('burger').addEventListener('click',()=>{$('sidebar').classList.toggle('open');$('overlay').classList.toggle('on');});
+$('overlay').addEventListener('click',()=>{$('sidebar').classList.remove('open');$('overlay').classList.remove('on');});
+goTo('home');
 
-    document.getElementById('unlockBtn').addEventListener('click', tryUnlock);
-    document.getElementById('pin').addEventListener('keydown', (e)=>{ if(e.key==='Enter') tryUnlock() });
+(function(){
+  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const SHO=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const DOW=['S','M','T','W','T','F','S'];
+  let cur=new Date();
+  const mSel=$('calMonth'),yInp=$('calYear');
+  MONTHS.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=m;mSel.appendChild(o);});
+  function render(d){const y=d.getFullYear(),m=d.getMonth();$('calLabel').textContent=SHO[m]+' '+y;mSel.value=m;yInp.value=y;const grid=$('calGrid');grid.innerHTML='';DOW.forEach(dw=>{const c=document.createElement('div');c.className='cal-cell dow';c.textContent=dw;grid.appendChild(c);});const start=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();const today=new Date();for(let i=0;i<start;i++){const c=document.createElement('div');c.className='cal-cell muted';grid.appendChild(c);}for(let dd=1;dd<=days;dd++){const c=document.createElement('div');c.className='cal-cell';c.textContent=dd;if(today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===dd)c.classList.add('today');grid.appendChild(c);}}
+  function upd(){cur=new Date(+yInp.value,+mSel.value,1);render(cur);}
+  $('calPrev').addEventListener('click',()=>{cur.setMonth(cur.getMonth()-1);render(cur);});
+  $('calNext').addEventListener('click',()=>{cur.setMonth(cur.getMonth()+1);render(cur);});
+  mSel.addEventListener('change',upd);yInp.addEventListener('change',upd);
+  $('calToday').addEventListener('click',()=>{cur=new Date();render(cur);});
+  render(cur);
+})();
 
-    // Auto-unlock for current session
-    if(sessionStorage.getItem('reel_unlocked')==='1') hideGate(); else showGate();
+(function(){
+  let correct=0,wrong=0,score=0,streak=0,running=false,timer=null,timeLeft=0,curAns=null;
+  const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+  function genQ(){const ops=['+','-','×'],op=ops[rnd(0,2)];let a,b;if(op==='+'){a=rnd(4,99);b=rnd(4,99);curAns=a+b;}else if(op==='-'){a=rnd(10,99);b=rnd(3,a);curAns=a-b;}else{a=rnd(4,12);b=rnd(3,12);curAns=a*b;}$('qText').textContent=a+' '+op+' '+b+' = ?';}
+  function updS(){const tot=correct+wrong,acc=tot?Math.round(correct*100/tot):0;$('gScore').textContent=score;$('gRight').textContent=correct;$('gWrong').textContent=wrong;$('gStreak').textContent=streak;$('gAcc').textContent=acc+'%';}
+  function setUI(on){$('ans').disabled=!on;$('submitAns').disabled=!on;$('nextQ').disabled=!on;if(on)$('ans').focus();}
+  function sub(){const v=Number($('ans').value);if(!Number.isFinite(v)){$('gMsg').textContent='// ERR: ENTER NUMERIC VALUE';$('gMsg').className='gm err';return;}if(v===curAns){correct++;streak++;score+=(running?2:1)+Math.min(streak,5);$('gMsg').textContent='// ✓ CORRECT';$('gMsg').className='gm ok';}else{wrong++;streak=0;score=Math.max(0,score-1);$('gMsg').textContent='// ✗ WRONG — ANSWER: '+curAns;$('gMsg').className='gm err';}updS();$('ans').value='';genQ();}
+  $('submitAns').addEventListener('click',sub);
+  $('ans').addEventListener('keydown',e=>{if(e.key==='Enter')sub();});
+  $('nextQ').addEventListener('click',()=>{$('gMsg').textContent='';genQ();$('ans').value='';$('ans').focus();});
+  $('start60').addEventListener('click',()=>{running=true;timeLeft=60;$('gTime').textContent=timeLeft+'s';$('start60').disabled=true;$('stopGame').disabled=false;setUI(true);$('gMsg').textContent='// SESSION STARTED';$('gMsg').className='gm ok';timer=setInterval(()=>{if(!running)return;timeLeft--;$('gTime').textContent=timeLeft+'s';if(timeLeft<=0){clearInterval(timer);running=false;setUI(false);$('start60').disabled=false;$('stopGame').disabled=true;$('gMsg').textContent='// SESSION END — SCORE: '+score+' | ACC: '+$('gAcc').textContent;$('gMsg').className='gm';}},1000);});
+  $('stopGame').addEventListener('click',()=>{running=false;clearInterval(timer);$('start60').disabled=false;$('stopGame').disabled=true;$('gTime').textContent='—';$('gMsg').textContent='// STOPPED';$('gMsg').className='gm';});
+  updS();setUI(true);genQ();$('gTime').textContent='∞';
+})();
 
-    // boot
-    buildReelTable();
+const FILL=.9,PF=.7855;
+const REELS=[{r:560,od:560,id:250,tr:300},{r:600,od:600,id:400,tr:315},{r:610,od:610,id:300,tr:400},{r:700,od:700,id:400,tr:355},{r:800,od:800,id:400,tr:400},{r:900,od:900,id:565,tr:400},{r:1000,od:1000,id:565,tr:450},{r:1100,od:1100,id:600,tr:500},{r:1200,od:1200,id:700,tr:600},{r:1400,od:1400,id:800,tr:700},{r:1600,od:1600,id:800,tr:800},{r:1800,od:1800,id:850,tr:900},{r:2000,od:2000,id:970,tr:900}];
+const capGeo=(od,id,tr,d)=>FILL*(tr*((od*od-id*id)/(d*d)))/1000;
+const capFac=(od,id,tr,d)=>PF*capGeo(od,id,tr,d);
 
-    // ===== quick self-tests (console) =====
-    (function runSelfTests(){
-      try {
-        const approx = (a,b,eps=1)=> Math.abs(a-b) <= eps;
-        const g90 = cap90_geometric(1600,800,800,31);
-        console.assert(approx(Math.round(g90), 1439, 2), 'Test1: geometric 90% ≈ 1439 m, got', g90);
-        const f90 = cap90_factory(1600,800,800,31);
-        console.assert(approx(Math.round(f90), 1130, 3), 'Test2: factory 90% ≈ 1130 m, got', f90);
-        console.assert(typeof buildReelTable === 'function', 'Test3: buildReelTable missing');
-        console.log('%cSelf-tests passed','color:green');
-      } catch(e){ console.error('Self-tests error', e); }
-    })();
-  </script>
+function calcRegular(){const d=+$('r-od').value,L=+$('r-len').value,out=$('r-out');if(!(d>0&&L>0)){out.innerHTML='<div class="note">// ENTER CABLE OD AND LENGTH</div>';return;}let best=null;for(let i=0;i<REELS.length;i++){const r=REELS[i],cf=capFac(r.od,r.id,r.tr,d);if(cf>=L){best={...r,cf};break;}}if(!best){const last=REELS[REELS.length-1];out.innerHTML='<div class="note">// EXCEEDS MAX REEL. LIMIT: '+last.r+' — '+FMT(capFac(last.od,last.id,last.tr,d))+' m</div>';return;}const pct=(L/best.cf*100).toFixed(1);out.innerHTML='<div class="stat-row"><div class="stat"><div class="stat-l">REEL SIZE</div><div class="stat-v green">'+best.r+'</div></div><div class="stat"><div class="stat-l">CAPACITY</div><div class="stat-v">'+FMT(best.cf)+' m</div></div><div class="stat"><div class="stat-l">YOUR LENGTH</div><div class="stat-v orange">'+FMT(L)+' m</div></div><div class="stat"><div class="stat-l">UTILIZATION</div><div class="stat-v">'+pct+'%</div></div></div>';}
+function resetRegular(){$('r-od').value='';$('r-len').value='';$('r-out').innerHTML='';}
+function calcCustom(){const d=+$('c-od').value,od=+$('c-rod').value,id=+$('c-rid').value,tr=+$('c-trv').value,out=$('c-out');if(!(d>0&&od>0&&id>0&&tr>0)){out.innerHTML='<div class="note">// ENTER ALL VALUES</div>';return;}if(id>=od){out.innerHTML='<div class="note" style="border-color:var(--red)">// ERR: BARREL ID MUST BE LESS THAN REEL OD</div>';return;}const g100=(tr*((od*od-id*id)/(d*d)))/1000;out.innerHTML='<div class="stat-row"><div class="stat"><div class="stat-l">@90% FACTORY</div><div class="stat-v">'+FMT(capFac(od,id,tr,d))+' m</div></div><div class="stat"><div class="stat-l">@90% GEO</div><div class="stat-v">'+FMT(capGeo(od,id,tr,d))+' m</div></div><div class="stat"><div class="stat-l">@100% GEO</div><div class="stat-v orange">'+FMT(g100)+' m</div></div></div>';}
+function resetCustom(){['c-od','c-rod','c-rid','c-trv'].forEach(id=>{$(id).value=''});$('c-out').innerHTML='';}
+
+$('mode-regular').addEventListener('click',()=>{$('panel-regular').style.display='block';$('panel-custom').style.display='none';$('mode-regular').classList.add('active');$('mode-custom').classList.remove('active');});
+$('mode-custom').addEventListener('click',()=>{$('panel-custom').style.display='block';$('panel-regular').style.display='none';$('mode-custom').classList.add('active');$('mode-regular').classList.remove('active');});
+
+function buildTable(){const d=+$('t-od').value,L=+$('t-len').value,tbl=$('reel-tbl');if(!(d>0)){tbl.innerHTML='<tr><td><div class="note">// ENTER CABLE OD</div></td></tr>';return;}let h='<tr><th>REEL</th><th>OD</th><th>ID</th><th>TRAVERSE</th><th>CAP @90% (m)</th>';if(L>0)h+='<th>FITS '+FMT(L)+'m?</th>';h+='</tr>';let rows='';REELS.forEach(r=>{const cf=capFac(r.od,r.id,r.tr,d),fits=L>0?(cf>=L?'✓ YES':'NO'):'';const hl=L>0&&cf>=L?' class="hl"':'';rows+='<tr'+hl+'><td>'+r.r+'</td><td>'+r.od+'</td><td>'+r.id+'</td><td>'+r.tr+'</td><td>'+FMT(cf)+'</td>';if(L>0)rows+='<td>'+fits+'</td>';rows+='</tr>';});tbl.innerHTML=h+rows;}
+buildTable();
+
+(function(){
+  const FT=.3048,RHO=.00896;let type='Strip';
+  function setType(t){type=t;['Strip','Rod','RM'].forEach(x=>$('cu-t'+x).classList.toggle('active',x===t));document.querySelectorAll('.only-strip').forEach(n=>n.style.display=t==='Strip'?'flex':'none');document.querySelectorAll('.only-rod').forEach(n=>n.style.display=t==='Rod'?'flex':'none');document.querySelectorAll('.only-rm').forEach(n=>n.style.display=t==='RM'?'flex':'none');calc();}
+  function updL(){const m=$('cu-mode').value;const map={'Meter to Kg':'Given Meter','Ft to Kg':'Given Ft','Kg to Meter':'Given Kg','Kg to Ft':'Given Kg'};$('cu-gl').textContent=map[m]||'Given Kg';}
+  function getArea(){if(type==='Strip'){const w=+$('cu-w').value,t=+$('cu-t').value;return(w>0&&t>0)?w*t:0;}if(type==='Rod'){const d=+$('cu-d').value;return d>0?Math.PI*d*d/4:0;}const a=+$('cu-a').value;return a>0?a:0;}
+  function calc(){const a=getArea();$('cu-area').textContent=a?a.toFixed(2):'—';if(!a){$('cu-kgpm').textContent='—';$('cu-rh').textContent='// RESULT: —';$('cu-rs').textContent='// ENTER DIMENSIONS.';return;}const kgpm=RHO*a;$('cu-kgpm').textContent=kgpm.toFixed(4);const g=+$('cu-g').value,m=$('cu-mode').value;if(!(g>=0)){$('cu-rh').textContent='// RESULT: —';return;}let out=NaN,unit='';if(m==='Meter to Kg'){out=g*kgpm;unit='kg';}else if(m==='Ft to Kg'){out=g*FT*kgpm;unit='kg';}else if(m==='Kg to Meter'){out=g/kgpm;unit='m';}else{out=g/(FT*kgpm);unit='ft';}if(!isFinite(out)){$('cu-rh').textContent='// RESULT: —';return;}$('cu-rh').textContent='// RESULT: '+Number(out.toFixed(2)).toLocaleString()+' '+unit;$('cu-rs').textContent='// '+$('cu-gl').textContent.toUpperCase()+': '+g;}
+  $('cu-tStrip').addEventListener('click',()=>setType('Strip'));
+  $('cu-tRod').addEventListener('click',()=>setType('Rod'));
+  $('cu-tRM').addEventListener('click',()=>setType('RM'));
+  $('cu-mode').addEventListener('change',()=>{updL();calc();});
+  ['cu-w','cu-t','cu-d','cu-a','cu-g'].forEach(id=>$(id).addEventListener('input',calc));
+  $('cu-reset').addEventListener('click',()=>{setType('Strip');$('cu-mode').value='Kg to Meter';['cu-w','cu-t','cu-d','cu-a','cu-g'].forEach(id=>$(id).value='');updL();calc();});
+  $('cu-swap').addEventListener('click',()=>{const m=$('cu-mode'),v=m.value;if(v==='Kg to Meter')m.value='Meter to Kg';else if(v==='Meter to Kg')m.value='Kg to Meter';else if(v==='Kg to Ft')m.value='Ft to Kg';else m.value='Kg to Ft';updL();calc();});
+  $('cu-copy').addEventListener('click',()=>copyText($('cu-rh').textContent+' — '+$('cu-rs').textContent));
+  setType('Strip');updL();calc();
+})();
+
+(function(){
+  const pi=Math.PI,RHO_CU=8.96;
+  const ring=(Do,Di)=>(pi/4)*(Do*Do-Di*Di);
+  const kg=(a,L,r)=>a*L*(r/1000);
+  const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:3});
+  $('pv-sc-btn').addEventListener('click',()=>{$('pv-sc-btn').classList.add('active');$('pv-mc-btn').classList.remove('active');$('pv-sc-card').style.display='block';$('pv-mc-card').style.display='none';});
+  $('pv-mc-btn').addEventListener('click',()=>{$('pv-mc-btn').classList.add('active');$('pv-sc-btn').classList.remove('active');$('pv-mc-card').style.display='block';$('pv-sc-card').style.display='none';});
+  $('pv-sc-calc').addEventListener('click',()=>{const dcu=+$('pv-sc-cu').value,tins=+$('pv-sc-ins').value,tsh=+$('pv-sc-sh').value,L=+$('pv-L').value,r=+$('pv-rho').value;if(!(dcu>0&&tins>=0&&tsh>=0&&L>=0&&r>0)){$('pv-sc-out').textContent='// ERR: ENTER VALID INPUTS.';return;}const dins=dcu+2*tins,dfin=dins+2*tsh,Ains=ring(dins,dcu),Ash=ring(dfin,dins),At=Ains+Ash,pvcpm=kg(At,1,r),pvcL=kg(At,L,r),Acu=ring(dcu,0),cupm=kg(Acu,1,RHO_CU),cuL=kg(Acu,L,RHO_CU);$('pv-sc-out').innerHTML='<span style="color:var(--ink2)">PVC    =</span> <b style="color:var(--cyan)">'+fmt(pvcpm)+'</b> <span style="color:var(--ink3)">kg/m</span>  —  <b style="color:var(--cyan)">'+fmt(pvcL)+'</b> <span style="color:var(--ink3)">kg / '+fmt(L)+' m</span><br><span style="color:var(--ink2)">COPPER =</span> <b style="color:var(--orange)">'+fmt(cupm)+'</b> <span style="color:var(--ink3)">kg/m</span>  —  <b style="color:var(--orange)">'+fmt(cuL)+'</b> <span style="color:var(--ink3)">kg / '+fmt(L)+' m</span><br><span style="color:var(--ink2)">TOTAL  =</span> <b style="color:var(--green)">'+fmt(pvcpm+cupm)+'</b> <span style="color:var(--ink3)">kg/m</span>  —  <b style="color:var(--green)">'+fmt(pvcL+cuL)+'</b> <span style="color:var(--ink3)">kg / '+fmt(L)+' m</span><br><span style="color:var(--ink2)">FINAL Ø =</span> <b style="color:var(--cyan)">'+fmt(dfin)+'</b> <span style="color:var(--ink3)">mm</span>';});
+  $('pv-sc-rst').addEventListener('click',()=>{['pv-sc-cu','pv-sc-ins','pv-sc-sh'].forEach(id=>$(id).value='');$('pv-sc-out').innerHTML='';});
+  $('pv-sc-cp').addEventListener('click',()=>{const t=$('pv-sc-out').innerText.trim();if(t)copyText(t);});
+  $('pv-mc-est').addEventListener('click',()=>{const N=+$('pv-mc-n').value,dcu=+$('pv-mc-cu').value,tins=+$('pv-mc-ins').value;if(!(N>=1&&dcu>0&&tins>=0)){toast('// ENTER N, Cu OD, INSULATION FIRST','e');return;}const dins=dcu+2*tins,k={1:1,2:2,3:2.155,4:2.414}[N];if(!k){toast('// ESTIMATOR: N = 1–4 ONLY','e');return;}$('pv-mc-innerOD').value=(k*dins*1.05).toFixed(2);toast('// INNER OD ESTIMATED','i');});
+  $('pv-mc-calc').addEventListener('click',()=>{const N=+$('pv-mc-n').value,dcu=+$('pv-mc-cu').value,tins=+$('pv-mc-ins').value,tin=+$('pv-mc-inner').value,tsh=+$('pv-mc-sh').value;let Dbun=+$('pv-mc-innerOD').value;const L=+$('pv-L').value,r=+$('pv-rho').value;if(!(N>=1&&dcu>0&&tins>=0&&tin>=0&&tsh>=0&&L>=0&&r>0)){$('pv-mc-out').textContent='// ERR: ENTER VALID INPUTS.';return;}const dins=dcu+2*tins;if(!(Dbun>0)){const k={1:1,2:2,3:2.155,4:2.414}[N];if(!k){$('pv-mc-out').textContent='// PROVIDE INNER OD OR ESTIMATE (N=1–4)';return;}Dbun=k*dins*1.05;}const Dinn=Dbun+2*tin,Dfin=Dinn+2*tsh,At=N*ring(dins,dcu)+ring(Dinn,Dbun)+ring(Dfin,Dinn),pvcpm=kg(At,1,r),pvcL=kg(At,L,r),Acu=N*ring(dcu,0),cupm=kg(Acu,1,RHO_CU),cuL=kg(Acu,L,RHO_CU);$('pv-mc-out').innerHTML='<span style="color:var(--ink2)">PVC    =</span> <b style="color:var(--cyan)">'+fmt(pvcpm)+'</b> <span style="color:var(--ink3)">kg/m</span>  —  <b style="color:var(--cyan)">'+fmt(pvcL)+'</b> <span style="color:var(--ink3)">kg / '+fmt(L)+' m</span><br><span style="color:var(--ink2)">COPPER =</span> <b style="color:var(--orange)">'+fmt(cupm)+'</b> <span style="color:var(--ink3)">kg/m</span>  —  <b style="color:var(--orange)">'+fmt(cuL)+'</b> <span style="color:var(--ink3)">kg / '+fmt(L)+' m</span><br><span style="color:var(--ink2)">TOTAL  =</span> <b style="color:var(--green)">'+fmt(pvcpm+cupm)+'</b> <span style="color:var(--ink3)">kg/m</span>  —  <b style="color:var(--green)">'+fmt(pvcL+cuL)+'</b> <span style="color:var(--ink3)">kg / '+fmt(L)+' m</span><br><span style="color:var(--ink2)">FINAL Ø =</span> <b style="color:var(--cyan)">'+fmt(Dfin)+'</b> <span style="color:var(--ink3)">mm</span>';});
+  $('pv-mc-rst').addEventListener('click',()=>{$('pv-mc-n').value=4;['pv-mc-cu','pv-mc-ins','pv-mc-inner','pv-mc-sh','pv-mc-innerOD'].forEach(id=>$(id).value='');$('pv-mc-out').innerHTML='';});
+  $('pv-mc-cp').addEventListener('click',()=>{const t=$('pv-mc-out').innerText.trim();if(t)copyText(t);});
+})();
+</script>
 </body>
 </html>
